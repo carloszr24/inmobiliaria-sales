@@ -100,13 +100,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="relative flex items-center h-[4.5rem] md:h-20">
           {/* Logo */}
-          <Link
-            href="/"
-            className={cn(
-              'flex items-center shrink-0',
-              !transparent && 'rounded-md bg-black px-2 py-1'
-            )}
-          >
+          <Link href="/" className="flex items-center shrink-0">
             <Image
               src="/images/inmobiliaria-sales.png"
               alt={`${AGENT.name} logo`}
