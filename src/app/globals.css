@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --brand-cyan: #d02060;
-  --brand-cyan-light: #f4a5be;
-  --brand-cyan-mid: #c81858;
-  --brand-cyan-dark: #a81548;
-  --brand-charcoal: #303030;
+  --brand-cyan: #e00880;
+  --brand-cyan-light: #f7b3d4;
+  --brand-cyan-mid: #c90772;
+  --brand-cyan-dark: #a80662;
+  --brand-charcoal: #181818;
   --brand-sand: #f9e9b8;
   --brand-white: #ffffff;
   --gold: var(--brand-cyan);
   --gold-light: var(--brand-cyan-light);
-  --gold-dark: var(--brand-cyan-dark);
+  --gold-dark: #8c0558;
 }
 
 @layer base {
@@ -110,7 +110,7 @@
   max-height: 94dvh;
   overflow-y: auto;
   background: linear-gradient(180deg, #fff 0%, #fcfafc 100%);
-  border: 1px solid #e7d4e1;
+  border: 1px solid #f0cce3;
   border-radius: 16px;
   box-shadow: 0 24px 80px rgba(12, 10, 9, 0.45);
   padding: 1rem 1rem 1.2rem;
@@ -199,7 +199,7 @@
   width: 100%;
   height: 0.45rem;
   border-radius: 999px;
-  background: #f3e8ef;
+  background: #fce8f3;
   overflow: hidden;
 }
 
@@ -211,7 +211,7 @@
 }
 
 .lead-modal-section {
-  border: 1px solid #efe2ea;
+  border: 1px solid #f5d4e8;
   background: #fff;
   border-radius: 10px;
   padding: 0.65rem 0.75rem;
