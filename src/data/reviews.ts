@@ -4,7 +4,7 @@ export type Review = {
   text: string
 }
 
-export const GOOGLE_RATING = 4.6
+export const GOOGLE_RATING = 5
 
 export const REVIEWS: Review[] = [
   {
