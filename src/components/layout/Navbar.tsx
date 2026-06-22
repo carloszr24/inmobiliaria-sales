@@ -1,10 +1,9 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { AGENT } from '@/lib/contact'
+import { BrandLogo } from '@/components/layout/BrandLogo'
 import { cn } from '@/lib/utils'
 import { ValoracionGratuitaModal } from '@/components/home/ValoracionGratuitaModal'
 
@@ -101,14 +100,7 @@ export function Navbar() {
         <div className="relative flex items-center h-[4.5rem] md:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
-            <Image
-              src={transparent ? '/images/inmobiliaria-sales.png' : '/images/inmobiliaria-sales-light.png'}
-              alt={`${AGENT.name} logo`}
-              width={260}
-              height={70}
-              priority
-              className="h-8 w-auto md:h-9 transition-opacity duration-200"
-            />
+            <BrandLogo variant={transparent ? 'dark' : 'light'} priority />
           </Link>
 
           <div className="hidden md:flex items-center gap-6 ml-auto">
