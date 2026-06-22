@@ -73,6 +73,21 @@ export function Navbar() {
     closeTimer.current = setTimeout(() => setServicesOpen(false), 110)
   }
 
+  const navItemClass =
+    'inline-flex h-10 items-center text-[11px] font-medium uppercase tracking-[0.13em] transition-colors duration-200'
+
+  const navLinkClass = (active: boolean) =>
+    cn(
+      navItemClass,
+      active
+        ? transparent
+          ? 'text-white'
+          : 'text-stone-900'
+        : transparent
+          ? 'text-stone-200 hover:text-white'
+          : 'text-stone-500 hover:text-stone-900'
+    )
+
   return (
     <header
       className={cn(
@@ -96,28 +111,21 @@ export function Navbar() {
             />
           </Link>
 
-          <div className="hidden md:flex items-center gap-7 ml-auto">
-            {/* Desktop nav */}
-            <nav className="flex items-center gap-7">
+          <div className="hidden md:flex items-center gap-6 ml-auto">
+            <nav className="flex items-center gap-6">
               {links.map((link) => (
                 link.href === '/sobre-nosotros' ? (
                   <div
                     key={link.href}
-                    className="relative"
+                    className="relative flex h-10 items-center"
                     onMouseEnter={openServices}
                     onMouseLeave={closeServices}
                   >
                     <Link
                       href={link.href}
                       className={cn(
-                        'inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-[0.13em] transition-colors duration-200',
-                        pathname === link.href || servicesOpen
-                          ? transparent
-                            ? 'text-white'
-                            : 'text-stone-900'
-                          : transparent
-                            ? 'text-stone-200 hover:text-white'
-                            : 'text-stone-500 hover:text-stone-900'
+                        navLinkClass(pathname === link.href || servicesOpen),
+                        'gap-1'
                       )}
                     >
                       {link.label}
@@ -167,16 +175,7 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={cn(
-                      'text-[11px] font-medium uppercase tracking-[0.13em] transition-colors duration-200',
-                      pathname === link.href
-                        ? transparent
-                          ? 'text-white'
-                          : 'text-stone-900'
-                        : transparent
-                          ? 'text-stone-200 hover:text-white'
-                          : 'text-stone-500 hover:text-stone-900'
-                    )}
+                    className={navLinkClass(pathname === link.href)}
                   >
                     {link.label}
                   </Link>
@@ -184,14 +183,13 @@ export function Navbar() {
               ))}
             </nav>
 
-            {/* CTA */}
             <ValoracionGratuitaModal
               triggerLabel="Valoración gratuita"
               triggerClassName={cn(
-                'rounded-md text-[11px] uppercase tracking-[0.13em] px-5 py-2.5',
+                'inline-flex h-10 items-center justify-center rounded-md px-5 text-[11px] uppercase tracking-[0.13em] leading-none',
                 transparent
-                  ? 'inline-flex items-center justify-center border border-white/80 text-white hover:bg-white hover:text-stone-900 transition-colors duration-200'
-                  : 'btn-primary'
+                  ? 'border border-white/80 text-white hover:bg-white hover:text-stone-900 transition-colors duration-200'
+                  : 'btn-primary py-0'
               )}
             />
           </div>
