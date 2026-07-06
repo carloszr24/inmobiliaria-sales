@@ -5,6 +5,8 @@ import { FeaturedPropertiesGrid } from '@/components/home/FeaturedPropertiesGrid
 import { HeroCarousel } from '@/components/home/HeroCarousel'
 import { ValoracionGratuitaModal } from '@/components/home/ValoracionGratuitaModal'
 
+export const dynamic = 'force-dynamic'
+
 function HomeIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6" aria-hidden="true">
@@ -35,7 +37,7 @@ function HandshakeIcon() {
 }
 
 export default async function HomePage() {
-  const featured = getFeaturedPropertiesForHome()
+  const featured = await getFeaturedPropertiesForHome()
 
   return (
     <>

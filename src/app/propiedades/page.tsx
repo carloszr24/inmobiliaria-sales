@@ -12,12 +12,14 @@ interface SearchParams {
   extra?: string
 }
 
-export default function PropiedadesPage({
+export const dynamic = 'force-dynamic'
+
+export default async function PropiedadesPage({
   searchParams,
 }: {
   searchParams: SearchParams
 }) {
-  const properties = filterProperties(getAllProperties(), searchParams)
+  const properties = filterProperties(await getAllProperties(), searchParams)
 
   return (
     <div className="pt-16">

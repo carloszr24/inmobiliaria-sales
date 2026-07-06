@@ -1,4 +1,4 @@
-import { DEMO_PROPERTIES } from '@/data/properties'
+import { readCatalog } from '@/lib/catalog-store'
 import { isFeaturedFlag, MAX_FEATURED_ON_HOME } from '@/lib/property-db'
 import type { Property } from '@/types'
 import type { PropertyFilters } from '@/types'
@@ -10,12 +10,17 @@ function hasExtra(value?: string | null): boolean {
   return normalized === 'si' || normalized === 'sí' || normalized === 'true' || normalized.startsWith('con ')
 }
 
-export function getAllProperties(): Property[] {
-  return [...DEMO_PROPERTIES].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+function sortByDate(properties: Property[]): Property[] {
+  return [...properties].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 }
 
-export function getPropertyById(id: string): Property | undefined {
-  return DEMO_PROPERTIES.find((p) => p.id === id)
+export async function getAllProperties(): Promise<Property[]> {
+  return sortByDate(await readCatalog())
+}
+
+export async function getPropertyById(id: string): Promise<Property | undefined> {
+  const properties = await readCatalog()
+  return properties.find((p) => p.id === id)
 }
 
 export function filterProperties(
@@ -63,13 +68,14 @@ export function filterProperties(
   return list
 }
 
-export function getFeaturedPropertiesForHome(): Property[] {
-  const featured = DEMO_PROPERTIES.filter((p) => isFeaturedFlag(p.featured))
+export async function getFeaturedPropertiesForHome(): Promise<Property[]> {
+  const catalog = await readCatalog()
+  const featured = catalog.filter((p) => isFeaturedFlag(p.featured))
   if (featured.length >= MAX_FEATURED_ON_HOME) {
     return featured.slice(0, MAX_FEATURED_ON_HOME)
   }
   const fill = [...featured]
-  for (const p of DEMO_PROPERTIES) {
+  for (const p of catalog) {
     if (fill.length >= MAX_FEATURED_ON_HOME) break
     if (!fill.some((x) => x.id === p.id)) fill.push(p)
   }

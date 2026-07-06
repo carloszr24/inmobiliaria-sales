@@ -400,7 +400,13 @@ export default function AdminPage() {
   }
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/propiedades/${id}`, { method: 'DELETE', credentials: 'include' })
+    const res = await fetch(`/api/propiedades/${id}`, { method: 'DELETE', credentials: 'include' })
+    if (!res.ok) {
+      const errBody = (await res.json().catch(() => ({}))) as { error?: string }
+      setSubmitError(errBody.error || 'No se pudo eliminar la propiedad')
+      setDeleteId(null)
+      return
+    }
     setDeleteId(null)
     await fetchProperties()
   }

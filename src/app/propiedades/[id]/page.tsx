@@ -1,16 +1,13 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CONTACT, phoneHref, whatsappHref } from '@/lib/contact'
-import { DEMO_PROPERTIES } from '@/data/properties'
 import { getPropertyById } from '@/lib/properties-store'
 import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer'
 import type { Property } from '@/types'
 
-export function generateStaticParams() {
-  return DEMO_PROPERTIES.map((p) => ({ id: p.id }))
-}
+export const dynamic = 'force-dynamic'
 
 function PhoneIcon() {
   return (
@@ -153,7 +150,7 @@ export default async function PropertyDetailPage({
 }: {
   params: { id: string }
 }) {
-  const property = getPropertyById(params.id)
+  const property = await getPropertyById(params.id)
   if (!property) notFound()
 
   const images = parseImages(property.images)
