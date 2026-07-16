@@ -1,4 +1,4 @@
-import { readCatalog } from '@/lib/catalog-store'
+import { listProperties } from '@/lib/properties-repository'
 import { isFeaturedFlag, MAX_FEATURED_ON_HOME } from '@/lib/property-db'
 import type { Property } from '@/types'
 import type { PropertyFilters } from '@/types'
@@ -15,11 +15,11 @@ function sortByDate(properties: Property[]): Property[] {
 }
 
 export async function getAllProperties(): Promise<Property[]> {
-  return sortByDate(await readCatalog())
+  return sortByDate(await listProperties())
 }
 
 export async function getPropertyById(id: string): Promise<Property | undefined> {
-  const properties = await readCatalog()
+  const properties = await listProperties()
   return properties.find((p) => p.id === id)
 }
 
@@ -69,7 +69,7 @@ export function filterProperties(
 }
 
 export async function getFeaturedPropertiesForHome(): Promise<Property[]> {
-  const catalog = await readCatalog()
+  const catalog = await listProperties()
   const featured = catalog.filter((p) => isFeaturedFlag(p.featured))
   if (featured.length >= MAX_FEATURED_ON_HOME) {
     return featured.slice(0, MAX_FEATURED_ON_HOME)

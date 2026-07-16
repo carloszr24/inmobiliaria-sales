@@ -129,6 +129,113 @@ export type PropertyInsert = {
   featured: boolean
 }
 
+export function insertToProperty(id: string, body: PropertyInsert, existing?: Property): Property {
+  const now = new Date()
+  if (existing) {
+    return {
+      ...existing,
+      title: body.title,
+      price: body.price,
+      location: body.location,
+      type: body.type,
+      operation: body.operation,
+      status: body.status,
+      description: body.description,
+      images: body.images,
+      fotocasaUrl: body.fotocasa_url,
+      bedrooms: body.bedrooms,
+      bathrooms: body.bathrooms,
+      sqMeters: body.sq_meters,
+      availability: body.availability,
+      hotWater: body.hot_water,
+      heating: body.heating,
+      condition: body.condition,
+      propertyAge: body.property_age,
+      floor: body.floor,
+      garage: body.garage,
+      elevator: body.elevator,
+      furnished: body.furnished,
+      energyRating: body.energy_rating,
+      energyValue: body.energy_value,
+      emissionsRating: body.emissions_rating,
+      emissionsValue: body.emissions_value,
+      featured: body.featured,
+      updatedAt: now,
+    }
+  }
+
+  return {
+    id,
+    title: body.title,
+    price: body.price,
+    location: body.location,
+    type: body.type,
+    operation: body.operation,
+    status: body.status,
+    description: body.description,
+    images: body.images,
+    fotocasaUrl: body.fotocasa_url,
+    bedrooms: body.bedrooms,
+    bathrooms: body.bathrooms,
+    sqMeters: body.sq_meters,
+    availability: body.availability,
+    hotWater: body.hot_water,
+    heating: body.heating,
+    condition: body.condition,
+    propertyAge: body.property_age,
+    floor: body.floor,
+    garage: body.garage,
+    elevator: body.elevator,
+    furnished: body.furnished,
+    energyRating: body.energy_rating,
+    energyValue: body.energy_value,
+    emissionsRating: body.emissions_rating,
+    emissionsValue: body.emissions_value,
+    featured: body.featured,
+    createdAt: now,
+    updatedAt: now,
+  }
+}
+
+export function propertyInsertToRow(
+  id: string,
+  body: PropertyInsert,
+  timestamps?: { created_at?: string; updated_at?: string }
+): PropertyRow {
+  const now = new Date().toISOString()
+  return {
+    id,
+    title: body.title,
+    price: body.price,
+    location: body.location,
+    type: body.type,
+    operation: body.operation,
+    status: body.status,
+    description: body.description,
+    images: body.images,
+    fotocasa_url: body.fotocasa_url,
+    bedrooms: body.bedrooms,
+    bathrooms: body.bathrooms,
+    sq_meters: body.sq_meters,
+    availability: body.availability,
+    hot_water: body.hot_water,
+    heating: body.heating,
+    condition: body.condition,
+    property_age: body.property_age,
+    floor: body.floor,
+    garage: body.garage,
+    elevator: body.elevator,
+    furnished: body.furnished,
+    energy_rating: body.energy_rating,
+    energy_value: body.energy_value,
+    emissions_rating: body.emissions_rating,
+    emissions_value: body.emissions_value,
+    featured: body.featured,
+    created_at: timestamps?.created_at ?? now,
+    updated_at: timestamps?.updated_at ?? now,
+  }
+}
+
 export function bodyToInsert(body: {
   title: string
   price: string | number

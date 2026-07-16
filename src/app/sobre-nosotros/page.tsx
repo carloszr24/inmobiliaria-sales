@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { FinancialPartnerSection } from '@/components/services/FinancialPartnerSection'
 
 function HomeIcon() {
   return (
@@ -104,24 +105,6 @@ export default function SobreNosotrosPage() {
         </div>
       </section>
 
-      {/* Values */}
-      <section className="py-24 px-6 md:px-10 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-          {[
-            { value: 'Transparencia', desc: 'Información clara y honesta en cada paso del proceso.' },
-            { value: 'Proximidad', desc: 'Te acompañamos personalmente desde el primer contacto.' },
-            { value: 'Resultados', desc: 'Más del 95% de nuestros clientes nos recomiendan.' },
-          ].map((item) => (
-            <div key={item.value} className="p-8">
-              <div className="w-1 h-8 bg-gold mx-auto mb-6" />
-              <h3 className="font-display text-2xl font-light text-stone-900 mb-3">{item.value}</h3>
-              <p className="text-stone-500 text-sm leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-
       {/* Services */}
       <section className="bg-stone-50 py-24 px-6 md:px-10">
         <div className="max-w-7xl mx-auto">
@@ -147,6 +130,8 @@ export default function SobreNosotrosPage() {
           </div>
         </div>
       </section>
+
+      <FinancialPartnerSection />
 
       {/* ── CTA ── */}
       <section className="bg-stone-950 text-white py-20 px-6 md:px-10 text-center">
