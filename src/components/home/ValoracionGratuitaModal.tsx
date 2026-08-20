@@ -131,6 +131,11 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
       return
     }
 
+    if (!/^\d{9}$/.test(form.phone.trim())) {
+      setError('Introduce un teléfono válido de 9 dígitos.')
+      return
+    }
+
     setSubmitting(true)
     try {
       const res = await fetch('/api/leads', {
@@ -328,8 +333,12 @@ export function ValoracionGratuitaModal({ triggerClassName = '', triggerLabel = 
                           Teléfono *
                           <input
                             type="tel"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={form.phone}
-                            onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
+                            onChange={(e) =>
+                              setForm((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 9) }))
+                            }
                           />
                         </label>
 

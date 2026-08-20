@@ -1,3 +1,5 @@
+import { rm } from 'fs/promises'
+import path from 'path'
 import { readCatalog, slugifyId, writeCatalog } from '@/lib/catalog-store'
 import {
   bodyToInsert,
@@ -8,10 +10,31 @@ import {
   type PropertyInsert,
   type PropertyRow,
 } from '@/lib/property-db'
-import { createSupabaseAdmin, assertPropertyStorageConfigured, isSupabaseConfigured } from '@/lib/supabase-server'
+import {
+  createSupabaseAdmin,
+  assertPropertyStorageConfigured,
+  isSupabaseConfigured,
+  PROPERTY_IMAGES_BUCKET,
+} from '@/lib/supabase-server'
 import type { Property } from '@/types'
 
 export { slugifyId }
+
+async function deletePropertyImages(id: string): Promise<void> {
+  if (isSupabaseConfigured()) {
+    const supabase = createSupabaseAdmin()
+    const { data, error } = await supabase.storage.from(PROPERTY_IMAGES_BUCKET).list(`properties/${id}`)
+    if (error) throw error
+    if (!data || data.length === 0) return
+    const paths = data.map((f) => `properties/${id}/${f.name}`)
+    const { error: removeError } = await supabase.storage.from(PROPERTY_IMAGES_BUCKET).remove(paths)
+    if (removeError) throw removeError
+    return
+  }
+
+  const dir = path.join(process.cwd(), 'public', 'images', 'properties', id)
+  await rm(dir, { recursive: true, force: true })
+}
 
 async function listFromSupabase(): Promise<Property[]> {
   const supabase = createSupabaseAdmin()
@@ -89,13 +112,26 @@ export async function deletePropertyRecord(id: string): Promise<boolean> {
     const supabase = createSupabaseAdmin()
     const { error, count } = await supabase.from('properties').delete({ count: 'exact' }).eq('id', id)
     if (error) throw error
-    return (count ?? 0) > 0
+    const deleted = (count ?? 0) > 0
+    if (deleted) {
+      try {
+        await deletePropertyImages(id)
+      } catch (imageError) {
+        console.error('Error eliminando imágenes de Supabase Storage:', imageError)
+      }
+    }
+    return deleted
   }
 
   const catalog = await readCatalog()
   const next = catalog.filter((p) => p.id !== id)
   if (next.length === catalog.length) return false
   await writeCatalog(next)
+  try {
+    await deletePropertyImages(id)
+  } catch (imageError) {
+    console.error('Error eliminando imágenes locales:', imageError)
+  }
   return true
 }
 

@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Property } from '@/types'
+import { Lead, Property } from '@/types'
 import { MAX_FEATURED_ON_HOME } from '@/lib/property-db'
+import { LEAD_INTENT_LABELS, LEAD_SOURCE_LABELS, LEAD_STATUS_LABELS } from '@/lib/leads'
 import { formatPrice, hasPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_STATUSES, PROPERTY_TYPES, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
@@ -82,6 +83,11 @@ export default function AdminPage() {
   const [featuredCapError, setFeaturedCapError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
+  const [leads, setLeads] = useState<Lead[]>([])
+  const [leadsLoading, setLeadsLoading] = useState(false)
+  const [showLeads, setShowLeads] = useState(false)
+  const [leadsError, setLeadsError] = useState<string | null>(null)
+
   const debugLog = (
     hypothesisId: string,
     location: string,
@@ -152,6 +158,35 @@ export default function AdminPage() {
   useEffect(() => {
     if (authed) fetchProperties()
   }, [authed])
+
+  const fetchLeads = async () => {
+    setLeadsLoading(true)
+    setLeadsError(null)
+    try {
+      const res = await fetch('/api/leads', { credentials: 'include' })
+      const data = await res.json().catch(() => ([]))
+      if (res.ok && Array.isArray(data)) {
+        setLeads(data)
+      } else {
+        setLeadsError((data as { error?: string }).error || 'No se pudieron cargar los leads')
+      }
+    } catch {
+      setLeadsError('No se pudieron cargar los leads')
+    } finally {
+      setLeadsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (authed) fetchLeads()
+  }, [authed])
+
+  const openLeads = () => {
+    setShowLeads(true)
+    fetchLeads()
+  }
+
+  const newLeadsCount = leads.filter((l) => l.status === 'nuevo').length
 
   // Form handlers
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -462,6 +497,14 @@ export default function AdminPage() {
             className="text-xs text-stone-500 hover:text-stone-900 transition-colors"
           >
             Cerrar sesión
+          </button>
+          <button onClick={openLeads} className="btn-outline text-xs px-5 py-2.5 relative">
+            Leads
+            {newLeadsCount > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center bg-gold text-white text-[10px] font-semibold rounded-full w-4 h-4 align-middle">
+                {newLeadsCount}
+              </span>
+            )}
           </button>
           <button onClick={openCreate} className="btn-primary text-xs px-5 py-2.5">
             + Nueva propiedad
@@ -828,6 +871,77 @@ export default function AdminPage() {
               >
                 Cancelar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Leads modal */}
+      {showLeads && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-6">
+          <div className="bg-white w-full max-w-5xl max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between px-8 py-6 border-b border-stone-100">
+              <div>
+                <h2 className="font-medium text-stone-900">Leads</h2>
+                <p className="text-stone-400 text-xs mt-1">{leads.length} contactos recibidos</p>
+              </div>
+              <button onClick={() => setShowLeads(false)} className="text-stone-400 hover:text-stone-900 text-xl leading-none">×</button>
+            </div>
+
+            <div className="overflow-auto flex-1">
+              {leadsLoading ? (
+                <div className="p-8 text-center text-stone-400 text-sm">Cargando...</div>
+              ) : leadsError ? (
+                <div className="p-8 text-center text-red-500 text-sm">{leadsError}</div>
+              ) : leads.length === 0 ? (
+                <div className="p-12 text-center text-stone-400">No hay leads todavía.</div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead className="bg-stone-50 border-b border-stone-200 sticky top-0">
+                    <tr>
+                      {['Fecha', 'Nombre', 'Teléfono', 'Email', 'Origen', 'Interés', 'Estado', 'Notas'].map((h) => (
+                        <th key={h} className="text-left text-xs text-stone-500 font-medium px-4 py-3 tracking-wide whitespace-nowrap">
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100">
+                    {leads.map((lead) => (
+                      <tr key={lead.id} className="hover:bg-stone-50 transition-colors align-top">
+                        <td className="px-4 py-3 text-stone-500 whitespace-nowrap text-xs">
+                          {new Date(lead.createdAt).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })}
+                        </td>
+                        <td className="px-4 py-3 font-medium text-stone-900 whitespace-nowrap">{lead.fullName}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <a href={`tel:${lead.phone}`} className="text-gold hover:underline">{lead.phone}</a>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {lead.email ? (
+                            <a href={`mailto:${lead.email}`} className="text-gold hover:underline">{lead.email}</a>
+                          ) : (
+                            <span className="text-stone-300">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="text-xs px-2 py-0.5 font-medium bg-stone-100 text-stone-600">
+                            {LEAD_SOURCE_LABELS[lead.source]}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-stone-500 whitespace-nowrap">{LEAD_INTENT_LABELS[lead.intent]}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className={cn('text-xs px-2 py-0.5 font-medium', lead.status === 'nuevo' ? 'text-emerald-600 bg-emerald-50' : 'text-stone-500 bg-stone-100')}>
+                            {LEAD_STATUS_LABELS[lead.status]}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-stone-500 max-w-[260px]">
+                          <span className="line-clamp-3 whitespace-pre-line">{lead.notes || '—'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
