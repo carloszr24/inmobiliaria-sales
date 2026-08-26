@@ -1,0 +1,53 @@
+# Seguimiento SEO — Sales Inmobiliaria
+
+Registro de trabajo para el mantenimiento SEO y tecnico mensual (29,90€/mes, sin permanencia).
+Base para el informe trimestral al cliente (David).
+
+## Contexto del contrato
+
+- **Motivo**: al buscar "Sales Inmobiliaria" en Google/Bing, el primer resultado organico es
+  `salesinmobiliaria.com` (inmobiliaria homonima en Valencia), no `salesinmobiliaria.es`.
+  El dominio casi identico (mismo nombre, distinto TLD) dificulta que Google diferencie ambas empresas.
+- **Objetivo del cliente**: aparecer en busquedas como "comprar vivienda en Fernan Nunez".
+- **Alcance**: SEO tecnico y mantenimiento (indexacion, datos estructurados, posicionamiento local,
+  seguridad/rendimiento, monitorizacion). No incluye subida de propiedades ni redes sociales.
+- **Propuesta enviada**: `docs/Propuesta-SEO.pdf`
+
+## Registro de trabajo
+
+### 2026-08-26 — Implementacion tecnica inicial (Fase 1-2 del roadmap)
+
+**Diagnostico previo**: la web no tenia sitemap.xml, robots.txt, datos estructurados ni metadata
+diferenciada por pagina. Todas las paginas compartian el mismo titulo/descripcion generico.
+
+**Cambios desplegados** (commit `83daa46`):
+- `sitemap.xml` dinamico — incluye home, propiedades, contacto, sobre-nosotros y cada ficha de
+  propiedad individual. Se regenera en cada peticion, asi que refleja el catalogo real sin caducar.
+- `robots.txt` — permite rastreo general, bloquea `/admin` y `/api`.
+- Datos estructurados **Schema.org `RealEstateAgent`** en todas las paginas (nombre, direccion,
+  telefono, horario de apertura) — la senal que le falta a Google para identificar la empresa como
+  negocio local de Fernan Nunez y no confundirla con la de Valencia.
+- **Open Graph y Twitter Cards** — enlaces compartidos (WhatsApp, redes) ahora muestran titulo,
+  descripcion e imagen correctos en vez de genericos.
+- **Metadata dinamica por propiedad** — cada ficha tiene su propio `<title>`, descripcion e imagen
+  basados en los datos reales de la propiedad (antes: mismo titulo en toda la web).
+- **Metadata dedicada** para `/propiedades`, `/contacto` y `/sobre-nosotros`.
+- `metadataBase` y URLs canonicas en todas las paginas.
+
+**Pendiente / proximos pasos**:
+- Dar de alta el dominio en Google Search Console y enviar el sitemap manualmente (acelera la
+  indexacion en vez de esperar a que Google lo encuentre solo).
+- Revisar Google Business Profile (senales NAP: nombre, direccion, telefono consistentes).
+- Monitorizacion de posiciones para "comprar vivienda en Fernan Nunez" y variantes locales.
+
+---
+
+## Formato para futuras entradas
+
+```
+### AAAA-MM-DD — Titulo breve
+
+**Que se hizo**: ...
+**Por que**: ...
+**Resultado / metricas** (si aplica): ...
+```
