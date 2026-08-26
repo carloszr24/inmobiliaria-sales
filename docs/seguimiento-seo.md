@@ -56,8 +56,10 @@ diferenciada por pagina. Todas las paginas compartian el mismo titulo/descripcio
 rastreo pasivo normal (que puede tardar semanas). Es el paso que mas acelera que las paginas nuevas
 (cada propiedad subida) aparezcan indexadas.
 
-**Resultado / metricas**: pendiente — Search Console tarda unos dias en mostrar datos de rendimiento
-tras la verificacion inicial.
+**Resultado / metricas**: sitemap enviado correctamente en `https://www.salesinmobiliaria.es/sitemap.xml`
+— estado "Correcto", 22 paginas descubiertas (home + secciones + todas las propiedades activas).
+Faltaba enviar la URL completa (con www) en vez de la ruta relativa `sitemap.xml`, coincidiendo con
+la correccion de `SITE_URL` realizada en el mismo dia.
 
 ---
 
