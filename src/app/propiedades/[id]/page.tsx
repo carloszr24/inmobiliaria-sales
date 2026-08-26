@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { CONTACT, phoneHref, whatsappHref } from '@/lib/contact'
 import { getPropertyById } from '@/lib/properties-store'
 import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
@@ -8,6 +9,26 @@ import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer
 import type { Property } from '@/types'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const property = await getPropertyById(params.id)
+  if (!property) return { title: 'Propiedad no encontrada' }
+
+  const images = parseImages(property.images)
+  const title = `${property.title} — ${OPERATION_LABELS[property.operation || 'venta']} en ${property.location}`
+  const description = property.description?.slice(0, 155) || `${property.title} en ${property.location}. ${hasPrice(property.price) ? formatPrice(property.price, property.operation) : 'Consultar precio'}.`
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/propiedades/${property.id}` },
+    openGraph: {
+      title,
+      description,
+      images: images.length ? [{ url: images[0] }] : undefined,
+    },
+  }
+}
 
 function PhoneIcon() {
   return (

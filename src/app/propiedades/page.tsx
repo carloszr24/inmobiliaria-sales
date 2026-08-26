@@ -1,7 +1,14 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { filterProperties, getAllProperties } from '@/lib/properties-store'
 import { PropertyCard } from '@/components/properties/PropertyCard'
 import { PropertyFilters } from '@/components/properties/PropertyFilters'
+
+export const metadata: Metadata = {
+  title: 'Propiedades en venta y alquiler en Fernán Núñez, Córdoba',
+  description: 'Explora pisos, casas y chalets en venta y alquiler en Fernán Núñez y la provincia de Córdoba. Catálogo actualizado de Sales Inmobiliaria.',
+  alternates: { canonical: '/propiedades' },
+}
 
 interface SearchParams {
   type?: string
