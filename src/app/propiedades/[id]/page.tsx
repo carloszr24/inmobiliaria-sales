@@ -6,6 +6,8 @@ import { getPropertyById } from '@/lib/properties-store'
 import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer'
+import { ShareButton } from '@/components/properties/ShareButton'
+import { SITE_URL } from '@/lib/seo'
 import type { Property } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -145,6 +147,7 @@ function PropertyCTAs({ property, whatsappUrl }: { property: Property; whatsappU
       >
         Solicitar información
       </a>
+      <ShareButton title={property.title} url={`${SITE_URL}/propiedades/${property.id}`} />
       {property.fotocasaUrl && (
         <a
           href={property.fotocasaUrl}
