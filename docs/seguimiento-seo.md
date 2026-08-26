@@ -40,6 +40,25 @@ diferenciada por pagina. Todas las paginas compartian el mismo titulo/descripcio
 - Revisar Google Business Profile (senales NAP: nombre, direccion, telefono consistentes).
 - Monitorizacion de posiciones para "comprar vivienda en Fernan Nunez" y variantes locales.
 
+### 2026-08-26 — Alta en Google Search Console
+
+**Que se hizo**:
+- Verificacion del dominio `salesinmobiliaria.es` en Google Search Console mediante registro TXT
+  (`google-site-verification=...`) anadido en Vercel DNS.
+- Envio del sitemap.xml a Search Console para forzar el rastreo activo (en vez de esperar a que
+  Google lo encuentre solo).
+- Corregido `SITE_URL` en el codigo: apuntaba a `salesinmobiliaria.es` (sin www), pero el dominio
+  redirige (308) a `www.salesinmobiliaria.es`. Ahora todas las URLs del sitemap, canonicals y
+  Open Graph apuntan directamente al destino final, evitando que Google tenga que seguir una
+  redireccion para llegar al contenido real.
+
+**Por que**: Search Console es lo que le dice a Google "rastrea esto ya", en vez de depender del
+rastreo pasivo normal (que puede tardar semanas). Es el paso que mas acelera que las paginas nuevas
+(cada propiedad subida) aparezcan indexadas.
+
+**Resultado / metricas**: pendiente — Search Console tarda unos dias en mostrar datos de rendimiento
+tras la verificacion inicial.
+
 ---
 
 ## Formato para futuras entradas
