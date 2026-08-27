@@ -27,6 +27,13 @@ function isLocalPropertyImage(url: string): boolean {
   return url.startsWith('/images/properties/')
 }
 
+function isExtraChecked(value?: string | null): boolean {
+  if (!value) return false
+  const normalized = value.trim().toLowerCase()
+  if (!normalized) return false
+  return normalized === 'sí' || normalized === 'si' || normalized === 'true' || normalized.startsWith('con ') || normalized.startsWith('semi')
+}
+
 function localPathFromPublicUrl(url: string): string | null {
   if (!isLocalPropertyImage(url)) return null
   return url.replace(/^\/images\//, '')
@@ -211,6 +218,10 @@ export default function AdminPage() {
     } else {
       setForm({ ...form, [name]: value })
     }
+  }
+
+  const handleExtraToggle = (field: 'garage' | 'elevator' | 'furnished' | 'heating') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [field]: e.target.checked ? 'Sí' : '' })
   }
 
   const openCreate = () => {
@@ -683,10 +694,11 @@ export default function AdminPage() {
                     <input name="hotWater" value={form.hotWater} onChange={handleChange}
                       className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
                   </div>
-                  <div>
-                    <label className="text-xs text-stone-500 block mb-1.5">Calefacción</label>
-                    <input name="heating" value={form.heating} onChange={handleChange}
-                      className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
+                  <div className="flex items-center gap-3 pt-6">
+                    <input type="checkbox" name="heating" id="extra-heating"
+                      checked={isExtraChecked(form.heating)} onChange={handleExtraToggle('heating')}
+                      className="accent-stone-900 w-4 h-4" />
+                    <label htmlFor="extra-heating" className="text-sm text-stone-600 cursor-pointer">Calefacción</label>
                   </div>
                   <div>
                     <label className="text-xs text-stone-500 block mb-1.5">Estado</label>
@@ -704,20 +716,23 @@ export default function AdminPage() {
                       placeholder="Ej: 6º"
                       className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
                   </div>
-                  <div>
-                    <label className="text-xs text-stone-500 block mb-1.5">Garaje</label>
-                    <input name="garage" value={form.garage} onChange={handleChange}
-                      className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
+                  <div className="flex items-center gap-3 pt-6">
+                    <input type="checkbox" name="garage" id="extra-garage"
+                      checked={isExtraChecked(form.garage)} onChange={handleExtraToggle('garage')}
+                      className="accent-stone-900 w-4 h-4" />
+                    <label htmlFor="extra-garage" className="text-sm text-stone-600 cursor-pointer">Garaje</label>
                   </div>
-                  <div>
-                    <label className="text-xs text-stone-500 block mb-1.5">Ascensor</label>
-                    <input name="elevator" value={form.elevator} onChange={handleChange}
-                      className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
+                  <div className="flex items-center gap-3 pt-6">
+                    <input type="checkbox" name="elevator" id="extra-elevator"
+                      checked={isExtraChecked(form.elevator)} onChange={handleExtraToggle('elevator')}
+                      className="accent-stone-900 w-4 h-4" />
+                    <label htmlFor="extra-elevator" className="text-sm text-stone-600 cursor-pointer">Ascensor</label>
                   </div>
-                  <div>
-                    <label className="text-xs text-stone-500 block mb-1.5">Amueblado</label>
-                    <input name="furnished" value={form.furnished} onChange={handleChange}
-                      className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
+                  <div className="flex items-center gap-3 pt-6">
+                    <input type="checkbox" name="furnished" id="extra-furnished"
+                      checked={isExtraChecked(form.furnished)} onChange={handleExtraToggle('furnished')}
+                      className="accent-stone-900 w-4 h-4" />
+                    <label htmlFor="extra-furnished" className="text-sm text-stone-600 cursor-pointer">Amueblado</label>
                   </div>
                   <div>
                     <label className="text-xs text-stone-500 block mb-1.5">Etiqueta energética</label>
