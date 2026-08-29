@@ -27,7 +27,7 @@ export function parseImages(images: string): string[] {
   }
 }
 
-export const PROPERTY_TYPES = ['piso', 'atico', 'casa', 'chalet', 'local', 'terreno', 'oficina'] as const
+export const PROPERTY_TYPES = ['piso', 'atico', 'casa', 'chalet', 'local', 'terreno', 'garaje', 'oficina'] as const
 export const PROPERTY_OPERATIONS = ['venta', 'alquiler'] as const
 export const PROPERTY_STATUSES = ['disponible', 'reservado', 'vendido'] as const
 
@@ -44,6 +44,7 @@ export const TYPE_LABELS: Record<string, string> = {
   chalet: 'Chalet adosado',
   local: 'Local',
   terreno: 'Terreno',
+  garaje: 'Garaje',
   oficina: 'Oficina',
 }
 
