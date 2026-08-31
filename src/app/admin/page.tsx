@@ -619,6 +619,8 @@ export default function AdminPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div className="text-xs text-stone-400">
                       Sube hasta 15 imágenes (JPG/PNG/WebP, máx. 5MB). Arrastra para reordenar.
+                      <br />
+                      Recomendado: fotos de móvil ya comprimidas (1-2 MB aprox.), no en resolución original de cámara — así la web carga más rápido.
                     </div>
                     <label className="btn-outline text-[11px] px-4 py-2 cursor-pointer">
                       + Añadir fotos

@@ -31,6 +31,7 @@ export function PropertyCard({ property, variant = 'default' }: PropertyCardProp
             src={firstImage}
             alt={property.title}
             fill
+            unoptimized
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes={isFeaturedMinimal ? '(max-width: 768px) 86vw, (max-width: 1024px) 68vw, 31vw' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'}
           />

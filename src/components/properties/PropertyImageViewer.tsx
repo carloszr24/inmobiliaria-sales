@@ -58,6 +58,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
           src={safeImages[index]}
           alt={`${title} ${index + 1}`}
           fill
+          unoptimized
           className="object-cover"
           priority
           sizes="(max-width: 1024px) 100vw, 60vw"
@@ -120,6 +121,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
                 src={img}
                 alt={`${title} miniatura ${i + 1}`}
                 fill
+                unoptimized
                 className="object-cover"
                 sizes="15vw"
               />
@@ -175,6 +177,7 @@ export function PropertyImageViewer({ images, title }: PropertyImageViewerProps)
                   src={safeImages[index]}
                   alt={`${title} ampliada ${index + 1}`}
                   fill
+                  unoptimized
                   className="object-contain"
                   sizes="100vw"
                 />
