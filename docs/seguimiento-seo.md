@@ -61,6 +61,21 @@ rastreo pasivo normal (que puede tardar semanas). Es el paso que mas acelera que
 Faltaba enviar la URL completa (con www) en vez de la ruta relativa `sitemap.xml`, coincidiendo con
 la correccion de `SITE_URL` realizada en el mismo dia.
 
+### 2026-08-26 — Fix de rendimiento: cuota de Vercel Image Optimization
+
+**Que se hizo**: las fotos de propiedades (Supabase Storage) se sirven ahora sin pasar por el
+optimizador de imagenes de Next.js/Vercel (`unoptimized`), en vez de generar una variante
+optimizada por cada tamano de pantalla. Solo el logo/branding del sitio sigue optimizado.
+
+**Por que**: con el catalogo creciendo rapido (23 propiedades y subiendo, varias fotos cada una), el
+consumo de transformaciones de imagen del plan de Vercel estaba al 78% (3.9K/5K) en 30 dias. Cada
+foto generaba varias transformaciones (tarjeta, visor, miniatura, ampliada x varios anchos de
+pantalla). De haberse agotado la cuota, las fotos nuevas habrian dejado de cargar en produccion.
+
+**Resultado / metricas**: consumo de transformaciones detenido para imagenes de propiedades.
+Tambien se anadio una nota en el panel de subida recomendando fotos ya comprimidas (1-2 MB) en vez
+de resolucion original de camara, para mantener la web rapida (relevante para Core Web Vitals).
+
 ---
 
 ## Formato para futuras entradas
