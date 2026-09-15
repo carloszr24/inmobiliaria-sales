@@ -76,6 +76,19 @@ pantalla). De haberse agotado la cuota, las fotos nuevas habrian dejado de carga
 Tambien se anadio una nota en el panel de subida recomendando fotos ya comprimidas (1-2 MB) en vez
 de resolucion original de camara, para mantener la web rapida (relevante para Core Web Vitals).
 
+### 2026-09-15 — Correccion de categoria en Google Business Profile
+
+**Que se hizo**: cambiada la categoria principal de la ficha de Google Business Profile de
+"Oficinas de empresas" a **"Agencia inmobiliaria"**.
+
+**Por que**: la categoria es una de las senales mas directas que usa Google para decidir en que
+busquedas mostrar el negocio (Fase 3 del roadmap: posicionamiento local). Con "Oficinas de
+empresas" la ficha no competia en busquedas como "inmobiliaria Fernan Nunez" o "comprar vivienda
+Fernan Nunez", que es justo el objetivo del cliente.
+
+**Resultado / metricas**: pendiente — los cambios de categoria en Google Business Profile suelen
+tardar unos dias en reflejarse en el posicionamiento local.
+
 ---
 
 ## Formato para futuras entradas
