@@ -89,6 +89,18 @@ Fernan Nunez", que es justo el objetivo del cliente.
 **Resultado / metricas**: pendiente — los cambios de categoria en Google Business Profile suelen
 tardar unos dias en reflejarse en el posicionamiento local.
 
+### 2026-09-17 — Descripcion de la ficha de Google Business Profile
+
+**Que se hizo**: redactada una descripcion para la ficha (limite 750 caracteres) incluyendo de forma
+natural las palabras clave objetivo — "Fernan Nunez", "Cordoba", "comprar vivienda", "vender piso",
+"alquiler" — sin caer en keyword stuffing ni incluir telefono/web/promociones (Google puede rechazar
+o penalizar descripciones que lo hagan). Cierra con llamada a la accion (valoracion gratuita).
+
+**Por que**: la descripcion es otra senal de relevancia local que usa Google (Fase 3 del roadmap),
+complementaria a la categoria corregida el 2026-09-15.
+
+**Resultado / metricas**: pendiente de que David la publique en la ficha.
+
 ---
 
 ## Formato para futuras entradas
