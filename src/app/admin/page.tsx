@@ -611,6 +611,14 @@ export default function AdminPage() {
                 <label className="text-xs text-stone-500 block mb-1.5">Descripción *</label>
                 <textarea name="description" value={form.description} onChange={handleChange} required rows={4}
                   className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900 resize-none" />
+                {(() => {
+                  const words = form.description.trim() ? form.description.trim().split(/\s+/).length : 0
+                  return (
+                    <p className={cn('text-xs mt-1.5', words >= 120 ? 'text-emerald-600' : 'text-stone-400')}>
+                      {words} palabras · Recomendado 120 o más: describe la zona, el estado, la distribución, la orientación y qué hay cerca. Ayuda a que Google posicione la propiedad.
+                    </p>
+                  )
+                })()}
               </div>
 
               <div className="md:col-span-2">

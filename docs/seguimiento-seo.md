@@ -143,6 +143,23 @@ Pendiente tras el segundo rastreo: 2 titulos largos (ubicaciones largas) y 1 met
 corregidos en el commit siguiente; 9 H1 duplicados (fichas con el mismo titulo escrito por el
 cliente, p. ej. "CASA EN VENTA" x4); imagenes pesadas (275) sin comprimir.
 
+### 2026-09-21 — CSP en modo informe y guia de longitud de descripciones
+
+**Que se hizo**:
+- Anadida `Content-Security-Policy-Report-Only` (solo en produccion) con una politica ajustada a los
+  recursos reales de la web (propios, fotos de Supabase, imagen de reserva de Unsplash, sin
+  iframes). No bloquea nada: el navegador solo informa a `/api/csp-report`, que lo registra en los
+  logs de Vercel. Tras unas semanas sin infracciones se podra pasar a `Content-Security-Policy`.
+- Panel admin: contador de palabras bajo la descripcion de cada propiedad, con recomendacion de
+  120 o mas (se pone en verde al llegar). Ataca el aviso "Contenido: paginas con poco contenido"
+  (37 de 40 paginas, todas fichas de propiedad).
+
+**Por que**: la CSP es el ultimo aviso de seguridad del rastreo; el modo informe evita romper la
+web mientras se comprueba. El contenido escaso solo mejora si las descripciones son mas largas.
+
+**Resultado / metricas**: pendiente. Nota: Screaming Frog puede seguir marcando la falta de CSP,
+porque busca la cabecera `Content-Security-Policy` y esta es la variante `-Report-Only`.
+
 ---
 
 ## Formato para futuras entradas
