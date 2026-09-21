@@ -101,6 +101,37 @@ complementaria a la categoria corregida el 2026-09-15.
 
 **Resultado / metricas**: pendiente de que David la publique en la ficha.
 
+### 2026-09-21 — Auditoria con Screaming Frog y correcciones
+
+**Que se hizo**: rastreo completo de `www.salesinmobiliaria.es` con Screaming Frog (39 URLs,
+informe en `sales_issues.xlsx`) y correccion de los problemas atacables desde el codigo:
+- **Titulos**: 27 paginas superaban 60 caracteres (69%) y 36 los 561 px; 5 estaban duplicados.
+  Fichas de propiedad ahora con titulo unico y corto ("Piso en venta · Fernan Nunez · 100 m² ·
+  129.000 €", 47-51 caracteres); titulos de home, propiedades, contacto y servicios ajustados a
+  30-60 caracteres.
+- **Meta descriptions**: 18 paginas superaban los 985 px (textos del cliente en MAYUSCULAS, mas
+  anchas en pixeles). Ahora se normalizan a minusculas con nombres propios y se cortan a ~150
+  caracteres por palabra completa.
+- **Encabezados**: la ficha renderizaba su bloque de datos dos veces (version movil y escritorio),
+  generando dos `<h1>` (35 paginas). Refactorizado a un unico bloque con reordenacion por CSS;
+  ahora 1 `<h1>` por pagina y sin botones/precio duplicados en el DOM.
+- **Seguridad**: anadidas cabeceras `X-Content-Type-Options: nosniff`, `X-Frame-Options:
+  SAMEORIGIN` y `Referrer-Policy: strict-origin-when-cross-origin` (faltaban en el 98% de URLs).
+
+**No corregido (y por que)**:
+- `Content-Security-Policy`: una politica mal ajustada puede romper la web (scripts de Next,
+  Google Maps, imagenes de Supabase). Se plantea como mejora aparte, primero en modo report-only.
+- URL bloqueada por robots.txt (1, prioridad "Alta" en la herramienta): es `/admin`, bloqueada a
+  proposito.
+- "Lectura dificil": la formula Flesch de Screaming Frog esta calibrada para ingles; no aplica.
+- H2 duplicados/multiples ("Descripcion", "Caracteristicas" en cada ficha): estructura normal.
+- Contenido escaso (36 paginas < 200 palabras): depende de las descripciones que redacta el
+  cliente; recomendable alargarlas.
+- Imagenes > 100 KB (269) y sin atributos de tamano (284): pendiente compresion en la subida
+  (sharp) para las fotos de propiedades.
+
+**Resultado / metricas**: pendiente de repetir el rastreo tras el despliegue para comparar.
+
 ---
 
 ## Formato para futuras entradas

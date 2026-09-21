@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Servicios',
+  title: 'Servicios inmobiliarios en Fernán Núñez',
   description: 'Conoce los servicios de Sales Inmobiliaria en Fernán Núñez: compra, venta, alquiler y asesoramiento personalizado con financiación a medida.',
   alternates: { canonical: '/sobre-nosotros' },
 }

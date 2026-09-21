@@ -5,7 +5,7 @@ import { PropertyCard } from '@/components/properties/PropertyCard'
 import { PropertyFilters } from '@/components/properties/PropertyFilters'
 
 export const metadata: Metadata = {
-  title: 'Propiedades en venta y alquiler en Fernán Núñez, Córdoba',
+  title: 'Propiedades en Fernán Núñez',
   description: 'Explora pisos, casas y chalets en venta y alquiler en Fernán Núñez y la provincia de Córdoba. Catálogo actualizado de Sales Inmobiliaria.',
   alternates: { canonical: '/propiedades' },
 }

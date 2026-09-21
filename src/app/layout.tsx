@@ -27,7 +27,7 @@ const logo = Montserrat({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Sales Inmobiliaria | Agencia inmobiliaria en Fernán Núñez, Córdoba',
+    default: 'Sales Inmobiliaria | Inmobiliaria en Fernán Núñez, Córdoba',
     template: '%s | Sales Inmobiliaria',
   },
   description: 'Compra, venta y alquiler de propiedades en Fernán Núñez y la provincia de Córdoba con asesoramiento cercano y profesional.',
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_ES',
     siteName: 'Sales Inmobiliaria',
-    title: 'Sales Inmobiliaria | Agencia inmobiliaria en Fernán Núñez, Córdoba',
+    title: 'Sales Inmobiliaria | Inmobiliaria en Fernán Núñez, Córdoba',
     description: 'Compra, venta y alquiler de propiedades en Fernán Núñez y la provincia de Córdoba con asesoramiento cercano y profesional.',
     url: SITE_URL,
     images: [{ url: '/images/inmobiliaria-sales.png' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sales Inmobiliaria | Agencia inmobiliaria en Fernán Núñez, Córdoba',
+    title: 'Sales Inmobiliaria | Inmobiliaria en Fernán Núñez, Córdoba',
     description: 'Compra, venta y alquiler de propiedades en Fernán Núñez y la provincia de Córdoba con asesoramiento cercano y profesional.',
     images: ['/images/inmobiliaria-sales.png'],
   },

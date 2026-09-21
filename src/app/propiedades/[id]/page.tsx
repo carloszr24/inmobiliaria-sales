@@ -7,7 +7,7 @@ import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TY
 import { cn } from '@/lib/utils'
 import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer'
 import { ShareButton } from '@/components/properties/ShareButton'
-import { SITE_URL } from '@/lib/seo'
+import { formatLocation, SITE_URL, toSentenceCase, truncateAtWord } from '@/lib/seo'
 import type { Property } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -17,15 +17,26 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   if (!property) return { title: 'Propiedad no encontrada' }
 
   const images = parseImages(property.images)
-  const title = `${property.title} — ${OPERATION_LABELS[property.operation || 'venta']} en ${property.location}`
-  const description = property.description?.slice(0, 155) || `${property.title} en ${property.location}. ${hasPrice(property.price) ? formatPrice(property.price, property.operation) : 'Consultar precio'}.`
+  const location = formatLocation(property.location)
+  const operation = (OPERATION_LABELS[property.operation || 'venta'] || 'Venta').toLowerCase()
+  const parts = [
+    `${TYPE_LABELS[property.type] || property.type} en ${operation}`,
+    location,
+    property.sqMeters ? `${property.sqMeters} m²` : null,
+    hasPrice(property.price) ? formatPrice(property.price, property.operation) : null,
+  ].filter(Boolean)
+  const title = { absolute: parts.join(' · ') }
+  const fallback = `${toSentenceCase(property.title.trim())} en ${location}. ${hasPrice(property.price) ? formatPrice(property.price, property.operation) : 'Consulta el precio'}.`
+  const description = property.description?.trim()
+    ? truncateAtWord(toSentenceCase(property.description), 150)
+    : fallback
 
   return {
     title,
     description,
     alternates: { canonical: `/propiedades/${property.id}` },
     openGraph: {
-      title,
+      title: title.absolute,
       description,
       images: images.length ? [{ url: images[0] }] : undefined,
     },
@@ -48,8 +59,8 @@ const statusColors: Record<string, string> = {
 
 function PropertyHeader({ property }: { property: Property }) {
   return (
-    <>
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+    <div className="order-1">
+      <div className="flex flex-wrap items-center gap-2 mb-6">
         <span
           className={cn(
             'text-xs font-medium px-2.5 py-1 border',
@@ -66,14 +77,14 @@ function PropertyHeader({ property }: { property: Property }) {
         </span>
       </div>
 
-      <h1 className="font-display text-3xl font-light text-stone-900 leading-tight mb-2">
+      <h1 className="font-display text-3xl font-light text-stone-900 leading-tight mb-6">
         {property.title}
       </h1>
 
-      <p className="text-stone-500 text-sm mb-6">
+      <p className="text-stone-500 text-sm">
         <span className="mr-1 text-stone-300">—</span> {property.location}
       </p>
-    </>
+    </div>
   )
 }
 
@@ -127,7 +138,7 @@ function PropertyPrice({ property }: { property: Property }) {
   if (!hasPrice(property.price)) return null
 
   return (
-    <div className="bg-stone-900 p-6">
+    <div className="order-3 lg:order-2 bg-stone-900 p-6">
       <p className="text-xs text-stone-400 tracking-widest uppercase mb-1">Precio</p>
       <p className="font-display text-4xl font-light text-white">
         {formatPrice(property.price, property.operation)}
@@ -228,19 +239,24 @@ export default async function PropertyDetailPage({
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-          <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-12 gap-y-6 lg:gap-y-0">
+          <div className="lg:col-span-3 lg:row-start-1">
             <PropertyImageViewer images={images} title={property.title} />
+          </div>
 
-            {/* Móvil: resumen encima del precio */}
-            <div className="lg:hidden mt-6 space-y-6">
+          <div className="lg:col-span-2 lg:col-start-4 lg:row-start-1 lg:row-span-2">
+            <div className="flex flex-col gap-6 lg:sticky lg:top-24">
               <PropertyHeader property={property} />
-              <PropertySpecs {...specsProps} />
+              <PropertySpecs {...specsProps} className="order-2 lg:order-3 lg:grid-cols-4" />
               <PropertyPrice property={property} />
-              <PropertyCTAs property={property} whatsappUrl={whatsappUrl} />
+              <div className="order-4">
+                <PropertyCTAs property={property} whatsappUrl={whatsappUrl} />
+              </div>
             </div>
+          </div>
 
-            <div className="mt-8">
+          <div className="lg:col-span-3 lg:row-start-2 mt-2 lg:mt-8">
+            <div>
               <h2 className="font-display text-2xl font-light text-stone-900 mb-4">Descripción</h2>
               <p className="text-stone-600 leading-relaxed text-sm whitespace-pre-line">{property.description}</p>
             </div>
@@ -258,16 +274,6 @@ export default async function PropertyDetailPage({
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Escritorio: orden original (precio antes de especificaciones) */}
-          <div className="hidden lg:block lg:col-span-2">
-            <div className="sticky top-24 space-y-6">
-              <PropertyHeader property={property} />
-              <PropertyPrice property={property} />
-              <PropertySpecs {...specsProps} className="sm:grid-cols-4" />
-              <PropertyCTAs property={property} whatsappUrl={whatsappUrl} />
-            </div>
           </div>
         </div>
       </div>
