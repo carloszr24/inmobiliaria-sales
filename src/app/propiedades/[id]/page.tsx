@@ -19,17 +19,18 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const images = parseImages(property.images)
   const location = formatLocation(property.location)
   const operation = (OPERATION_LABELS[property.operation || 'venta'] || 'Venta').toLowerCase()
-  const parts = [
-    `${TYPE_LABELS[property.type] || property.type} en ${operation}`,
-    location,
-    property.sqMeters ? `${property.sqMeters} m²` : null,
-    hasPrice(property.price) ? formatPrice(property.price, property.operation) : null,
-  ].filter(Boolean)
-  const title = { absolute: parts.join(' · ') }
+  const typeOp = `${TYPE_LABELS[property.type] || property.type} en ${operation}`
+  const price = hasPrice(property.price) ? formatPrice(property.price, property.operation) : null
+  const m2 = property.sqMeters ? `${property.sqMeters} m²` : null
+  const buildTitle = (...parts: (string | null)[]) => parts.filter(Boolean).join(' · ')
+  let titleText = buildTitle(typeOp, location, m2, price)
+  if (titleText.length > 60) titleText = buildTitle(typeOp, location, price)
+  const title = { absolute: titleText }
   const fallback = `${toSentenceCase(property.title.trim())} en ${location}. ${hasPrice(property.price) ? formatPrice(property.price, property.operation) : 'Consulta el precio'}.`
-  const description = property.description?.trim()
+  let description = property.description?.trim()
     ? truncateAtWord(toSentenceCase(property.description), 150)
     : fallback
+  if (description.length < 90) description = `${description} Más información y visitas en Sales Inmobiliaria, Fernán Núñez.`
 
   return {
     title,

@@ -130,7 +130,18 @@ informe en `sales_issues.xlsx`) y correccion de los problemas atacables desde el
 - Imagenes > 100 KB (269) y sin atributos de tamano (284): pendiente compresion en la subida
   (sharp) para las fotos de propiedades.
 
-**Resultado / metricas**: pendiente de repetir el rastreo tras el despliegue para comparar.
+**Resultado / metricas** (segundo rastreo, 40 URLs, mismo dia):
+| Problema | Antes | Despues |
+|---|---|---|
+| Titulos > 60 caracteres | 27 (69%) | 2 (5%) |
+| Titulos > 561 px | 36 (92%) | 2 (5%) |
+| Titulos duplicados | 5 | 0 |
+| Meta descriptions > 985 px | 18 (46%) | 0 |
+| H1 multiple (2 por pagina) | 35 (90%) | 0 |
+| Sin cabeceras X-Content-Type / X-Frame / Referrer-Policy | 58 (98%) | 0 |
+Pendiente tras el segundo rastreo: 2 titulos largos (ubicaciones largas) y 1 meta description corta,
+corregidos en el commit siguiente; 9 H1 duplicados (fichas con el mismo titulo escrito por el
+cliente, p. ej. "CASA EN VENTA" x4); imagenes pesadas (275) sin comprimir.
 
 ---
 
