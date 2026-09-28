@@ -160,6 +160,27 @@ web mientras se comprueba. El contenido escaso solo mejora si las descripciones 
 **Resultado / metricas**: pendiente. Nota: Screaming Frog puede seguir marcando la falta de CSP,
 porque busca la cabecera `Content-Security-Policy` y esta es la variante `-Report-Only`.
 
+### 2026-09-28 — Correcciones de accesibilidad (Core Web Vitals)
+
+**Que se hizo**: tres avisos de accesibilidad reportados en la auditoria de Core Web Vitals:
+- **ARIA prohibido**: el bloque de estrellas de valoracion (`ReviewsCarousel.tsx`) tenia
+  `aria-label` en un `<div>` generico, donde ese atributo no esta permitido segun la especificacion
+  ARIA. Anadido `role="img"` al mismo div, que si admite `aria-label`.
+- **Contraste insuficiente**: el pie de pagina (fondo `#f3ede4`) usaba `text-stone-500` (ratio 4.12:1,
+  no llega al minimo 4.5:1 de WCAG AA) y `text-stone-600` (6.56:1, se mantiene) para varios textos.
+  Subido a `text-stone-600`/`text-stone-700` segun el caso (6.56:1 y 8.83:1).
+- **Orden de encabezados**: los rotulos "Navegacion" y "Contacto" del pie de pagina eran `<h4>`
+  sin que existiera un `<h3>` antes en la pagina (salto de nivel). No son parte de la estructura
+  real de la pagina, asi que se cambiaron a `<p>` con el mismo estilo visual.
+
+**Por que**: son fallos de accesibilidad (WCAG) que tambien puntuan en el apartado de Accesibilidad
+de Lighthouse/Core Web Vitals, relevante para SEO tecnico ademas de para usuarios con lectores de
+pantalla o baja vision.
+
+**Resultado / metricas**: verificado en el HTML servido (dev): `role="img"` presente, 0 `<h4>` en
+la pagina, pie de pagina en `text-stone-600`/`text-stone-700`. Pendiente de repetir la auditoria de
+accesibilidad en produccion tras el despliegue.
+
 ---
 
 ## Formato para futuras entradas
