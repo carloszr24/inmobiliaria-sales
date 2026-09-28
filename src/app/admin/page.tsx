@@ -275,7 +275,7 @@ export default function AdminPage() {
   const addFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
     const allowed = new Set(['image/jpeg', 'image/png', 'image/webp'])
-    const maxBytes = 5 * 1024 * 1024
+    const maxBytes = 15 * 1024 * 1024
     const next: ImageItem[] = []
     for (const f of Array.from(files)) {
       if (!allowed.has(f.type)) continue
@@ -538,6 +538,26 @@ export default function AdminPage() {
                 <label className="text-xs text-stone-500 block mb-1.5">Título *</label>
                 <input name="title" value={form.title} onChange={handleChange} required
                   className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
+                {(() => {
+                  const letters = form.title.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, '')
+                  const isShouting = letters.length > 4 && letters === letters.toUpperCase()
+                  const duplicated = properties.some(
+                    (p) => p.id !== editingId && p.title.trim().toLowerCase() === form.title.trim().toLowerCase() && form.title.trim()
+                  )
+                  return (
+                    <div className="text-xs mt-1.5 space-y-0.5">
+                      {isShouting && (
+                        <p className="text-amber-600">Evita escribir todo en mayúsculas, se lee peor y Google lo penaliza un poco.</p>
+                      )}
+                      {duplicated && (
+                        <p className="text-amber-600">Ya hay otra propiedad con este mismo título — añade algo que la distinga (calle, planta, extra) para no duplicar.</p>
+                      )}
+                      <p className="text-stone-400">
+                        Consejo: tipo + zona/calle + algo distintivo. Ej: &ldquo;Piso 3 habitaciones con ascensor en Avda. Cádiz&rdquo; en vez de &ldquo;PISO EN VENTA&rdquo;.
+                      </p>
+                    </div>
+                  )
+                })()}
               </div>
 
               <div>
@@ -613,10 +633,24 @@ export default function AdminPage() {
                   className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900 resize-none" />
                 {(() => {
                   const words = form.description.trim() ? form.description.trim().split(/\s+/).length : 0
+                  const letters = form.description.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, '')
+                  const isShouting = letters.length > 20 && letters === letters.toUpperCase()
                   return (
-                    <p className={cn('text-xs mt-1.5', words >= 120 ? 'text-emerald-600' : 'text-stone-400')}>
-                      {words} palabras · Recomendado 120 o más: describe la zona, el estado, la distribución, la orientación y qué hay cerca. Ayuda a que Google posicione la propiedad.
-                    </p>
+                    <div className="text-xs mt-1.5 space-y-1">
+                      <p className={words >= 120 ? 'text-emerald-600' : 'text-stone-400'}>
+                        {words} palabras · Recomendado 120 o más.
+                      </p>
+                      {isShouting && (
+                        <p className="text-amber-600">Evita escribir todo en mayúsculas — usa mayúscula solo al empezar frase, se lee mejor y Google lo prefiere.</p>
+                      )}
+                      <p className="text-stone-400">
+                        Incluye: zona/calle exacta, estado (a reformar / reformado / listo para entrar), distribución
+                        (habitaciones, baños, plantas), extras (garaje, ascensor, terraza) y qué hay cerca (colegios,
+                        centro, transporte). Ej: &ldquo;Piso de 90 m² en Avda. Cádiz, a 5 min del centro. Reformado
+                        en 2023, 3 habitaciones, salón exterior y cocina equipada. Dispone de ascensor y vistas
+                        despejadas a la sierra.&rdquo;
+                      </p>
+                    </div>
                   )
                 })()}
               </div>
@@ -626,9 +660,9 @@ export default function AdminPage() {
                 <div className="border border-stone-200 p-4 space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <div className="text-xs text-stone-400">
-                      Sube hasta 15 imágenes (JPG/PNG/WebP, máx. 5MB). Arrastra para reordenar.
+                      Sube hasta 15 imágenes (JPG/PNG/WebP, máx. 15MB por foto). Arrastra para reordenar.
                       <br />
-                      Recomendado: fotos de móvil ya comprimidas (1-2 MB aprox.), no en resolución original de cámara — así la web carga más rápido.
+                      Se comprimen automáticamente al subirlas — puedes subir la foto tal cual sale del móvil, sin preocuparte del tamaño.
                     </div>
                     <label className="btn-outline text-[11px] px-4 py-2 cursor-pointer">
                       + Añadir fotos

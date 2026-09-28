@@ -181,6 +181,34 @@ pantalla o baja vision.
 la pagina, pie de pagina en `text-stone-600`/`text-stone-700`. Pendiente de repetir la auditoria de
 accesibilidad en produccion tras el despliegue.
 
+### 2026-09-28 — Compresion automatica de fotos y guias de titulo/descripcion en el admin
+
+**Que se hizo**:
+- **Compresion automatica de imagenes**: el endpoint de subida (`/api/uploads/property-image`) ahora
+  usa `sharp` para redimensionar (maximo 1920px) y comprimir cada foto a ~200KB antes de guardarla
+  en Supabase Storage, probando calidades JPEG decrecientes hasta llegar al objetivo. David puede
+  subir la foto tal cual sale del movil (hasta 15MB) sin preocuparse del peso. Probado con una foto
+  sintetica de 8,8MB muy ruidosa (peor caso real) -> 145KB finales en Storage.
+  Ataca directamente el aviso "Imagenes: Mas de 100 KB" (275 URLs en el ultimo rastreo).
+- **Guia de titulo**: aviso en vivo si el titulo esta en MAYUSCULAS SOSTENIDAS, aviso si coincide
+  exactamente con el titulo de otra propiedad ya existente (el rastreo de Screaming Frog encontro
+  9 H1 duplicados, la mayoria por titulos genericos tipo "CASA EN VENTA" repetido), y un consejo
+  fijo con formula (tipo + zona/calle + detalle distintivo) y ejemplo.
+- **Guia de descripcion**: ademas del contador de palabras (120+ recomendado, ya existente), aviso
+  si esta en mayusculas sostenidas y un ejemplo completo de descripcion bien escrita con la lista
+  de datos que deberia incluir (zona exacta, estado, distribucion, extras, que hay cerca).
+
+**Por que**: los tres problemas mas repetidos en las auditorias (imagenes pesadas, H1 duplicados,
+contenido escaso) vienen de como se cargan las fichas, no se pueden arreglar solo con codigo en las
+paginas ya publicadas — hacia falta evitar que el problema se siga generando en cada propiedad
+nueva. Con esto el propio panel guia a David hacia fichas mejor optimizadas sin que tenga que
+acordarse de reglas de SEO.
+
+**Resultado / metricas**: verificado en local (subida real de una foto de 8,8MB -> 145KB en
+Supabase; avisos de titulo probados con "CASA EN VENTA", detecto tanto mayusculas como duplicado).
+Pendiente: las 275 fotos ya subidas siguen pesando lo mismo, esto solo afecta a fotos nuevas —
+recomprimir el catalogo existente seria un paso aparte (sobrescribe originales, requiere confirmacion).
+
 ---
 
 ## Formato para futuras entradas
