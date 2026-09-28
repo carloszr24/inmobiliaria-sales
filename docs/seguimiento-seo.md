@@ -209,6 +209,32 @@ Supabase; avisos de titulo probados con "CASA EN VENTA", detecto tanto mayuscula
 Pendiente: las 275 fotos ya subidas siguen pesando lo mismo, esto solo afecta a fotos nuevas —
 recomprimir el catalogo existente seria un paso aparte (sobrescribe originales, requiere confirmacion).
 
+### 2026-09-28 (2) — Revertida la compresion automatica, guia manual con TinyPNG
+
+**Que se hizo**: Carlos decidio no usar procesamiento automatico de imagenes en el servidor (para
+no arriesgarse a repetir el problema de cuota de Vercel de antes, aunque tecnicamente la compresion
+con `sharp` no consumia esa cuota — es una precaucion, no un fallo tecnico). Se revirtio por
+completo lo hecho horas antes:
+- Quitada la dependencia `sharp` y la compresion en `/api/uploads/property-image` — vuelve a
+  guardar la imagen tal cual la sube David, con el limite original de 5MB.
+- En su lugar, el panel ahora **enlaza directamente a tinypng.com** y pide comprimir ahi antes de
+  subir (objetivo: menos de 200KB por foto).
+- Cada foto recien seleccionada muestra su peso en una etiqueta de color (verde si <=200KB, ambar
+  si pesa mas), para que sea evidente cual hace falta comprimir.
+- **Recomendador de titulo**: contador de caracteres (recomendado <=60, coincide con el limite que
+  marca Screaming Frog), avisa si esta en mayusculas o duplicado con otra propiedad — pero deja
+  publicar igual, explicando que perjudica el posicionamiento.
+- **Recomendador de descripcion**: el contador de palabras ya existente ahora dice explicitamente
+  que las descripciones cortas perjudican el posicionamiento (antes solo lo insinuaba con el color).
+
+**Por que**: mismo objetivo que antes (evitar que sigan entrando fotos pesadas, titulos duplicados
+y descripciones vacias), pero sin que el servidor toque ni procese nada — la decision y el trabajo
+de ajustar las fotos es manual, de David, con una herramienta externa gratuita.
+
+**Resultado / metricas**: verificado en local — subida de una foto sin comprimir mantiene el mismo
+peso exacto en Supabase Storage (no se altera), subida de una foto >5MB se rechaza con mensaje que
+redirige a TinyPNG, badges de peso y avisos de titulo/descripcion probados y funcionando.
+
 ---
 
 ## Formato para futuras entradas

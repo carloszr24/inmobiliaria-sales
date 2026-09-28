@@ -275,7 +275,7 @@ export default function AdminPage() {
   const addFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
     const allowed = new Set(['image/jpeg', 'image/png', 'image/webp'])
-    const maxBytes = 15 * 1024 * 1024
+    const maxBytes = 5 * 1024 * 1024
     const next: ImageItem[] = []
     for (const f of Array.from(files)) {
       if (!allowed.has(f.type)) continue
@@ -539,13 +539,18 @@ export default function AdminPage() {
                 <input name="title" value={form.title} onChange={handleChange} required
                   className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
                 {(() => {
+                  const length = form.title.trim().length
                   const letters = form.title.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, '')
                   const isShouting = letters.length > 4 && letters === letters.toUpperCase()
+                  const tooLong = length > 60
                   const duplicated = properties.some(
                     (p) => p.id !== editingId && p.title.trim().toLowerCase() === form.title.trim().toLowerCase() && form.title.trim()
                   )
                   return (
                     <div className="text-xs mt-1.5 space-y-0.5">
+                      <p className={tooLong ? 'text-amber-600' : 'text-stone-400'}>
+                        {length}/60 caracteres recomendados{tooLong ? ' — se puede pasar, pero cuanto más largo, peor lo muestra Google (se corta) y peor posiciona.' : ''}
+                      </p>
                       {isShouting && (
                         <p className="text-amber-600">Evita escribir todo en mayúsculas, se lee peor y Google lo penaliza un poco.</p>
                       )}
@@ -637,8 +642,8 @@ export default function AdminPage() {
                   const isShouting = letters.length > 20 && letters === letters.toUpperCase()
                   return (
                     <div className="text-xs mt-1.5 space-y-1">
-                      <p className={words >= 120 ? 'text-emerald-600' : 'text-stone-400'}>
-                        {words} palabras · Recomendado 120 o más.
+                      <p className={words >= 120 ? 'text-emerald-600' : 'text-amber-600'}>
+                        {words} palabras de 120 recomendadas{words < 120 ? ' — se puede publicar igual, pero las descripciones cortas perjudican el posicionamiento en Google.' : ''}
                       </p>
                       {isShouting && (
                         <p className="text-amber-600">Evita escribir todo en mayúsculas — usa mayúscula solo al empezar frase, se lee mejor y Google lo prefiere.</p>
@@ -660,9 +665,13 @@ export default function AdminPage() {
                 <div className="border border-stone-200 p-4 space-y-3">
                   <div className="flex items-center justify-between gap-4">
                     <div className="text-xs text-stone-400">
-                      Sube hasta 15 imágenes (JPG/PNG/WebP, máx. 15MB por foto). Arrastra para reordenar.
+                      Sube hasta 15 imágenes (JPG/PNG/WebP, máx. 5MB por foto). Arrastra para reordenar.
                       <br />
-                      Se comprimen automáticamente al subirlas — puedes subir la foto tal cual sale del móvil, sin preocuparte del tamaño.
+                      <strong className="text-stone-600">Antes de subirlas, comprímelas en{' '}
+                        <a href="https://tinypng.com" target="_blank" rel="noopener noreferrer" className="text-brand-cyan-dark underline hover:no-underline">
+                          tinypng.com
+                        </a> (gratis, arrastra y suelta)</strong> — apunta a menos de 200KB por foto.
+                      Fotos pesadas hacen la web lenta y eso perjudica el posicionamiento en Google.
                     </div>
                     <label className="btn-outline text-[11px] px-4 py-2 cursor-pointer">
                       + Añadir fotos
@@ -714,6 +723,16 @@ export default function AdminPage() {
                               {idx === 0 && (
                                 <span className="absolute bottom-2 left-2 bg-gold text-white text-[10px] px-2 py-1">
                                   Principal
+                                </span>
+                              )}
+                              {item.kind === 'new' && (
+                                <span
+                                  className={cn(
+                                    'absolute top-2 left-2 text-[10px] px-2 py-1 font-medium',
+                                    item.file.size > 200 * 1024 ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white'
+                                  )}
+                                >
+                                  {(item.file.size / 1024).toFixed(0)} KB
                                 </span>
                               )}
                             </div>
