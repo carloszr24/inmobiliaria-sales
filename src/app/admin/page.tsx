@@ -1012,8 +1012,8 @@ export default function AdminPage() {
                             {LEAD_STATUS_LABELS[lead.status]}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-stone-500 max-w-[260px]">
-                          <span className="line-clamp-3 whitespace-pre-line">{lead.notes || '—'}</span>
+                        <td className="px-4 py-3 text-stone-500 min-w-[280px] max-w-[420px]">
+                          <span className="block whitespace-pre-line break-words">{lead.notes || '—'}</span>
                         </td>
                       </tr>
                     ))}
