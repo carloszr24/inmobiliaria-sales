@@ -235,6 +235,21 @@ de ajustar las fotos es manual, de David, con una herramienta externa gratuita.
 peso exacto en Supabase Storage (no se altera), subida de una foto >5MB se rechaza con mensaje que
 redirige a TinyPNG, badges de peso y avisos de titulo/descripcion probados y funcionando.
 
+### 2026-10-30 — Nombre de la ficha de Google Maps corregido (aviso de Google)
+
+**Que se hizo**: el 20/08/2026 se corrigio el nombre del sitio en Google Maps: de "Imobiliaria Sales"
+(grafia erronea) a **"SALES Inmobiliaria"**. Google lo notifico por email el 30/10/2026: la ficha
+acumula **mas de 500 visualizaciones totales** (dato de Google, no equivale a visitas a la web).
+
+**Por que**: Fase 3 del roadmap (posicionamiento local). El nombre de la ficha debe ser el mismo que
+usa la web y el marcado Schema.org (`name`), una de las senales NAP (nombre, direccion, telefono)
+que Google cruza para identificar el negocio y no confundirlo con la inmobiliaria homonima de
+Valencia.
+
+**Resultado / metricas**: 500+ visualizaciones de la ficha. Para el informe trimestral, cruzarlo con
+el rendimiento de la ficha en Google Business Profile (busquedas, llamadas, clics a la web) cuando
+este disponible.
+
 ---
 
 ## Formato para futuras entradas
