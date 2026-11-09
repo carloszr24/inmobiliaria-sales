@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { CONTACT, phoneHref, whatsappHref } from '@/lib/contact'
 import { getPropertyById } from '@/lib/properties-store'
-import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
+import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, primaryType, STATUS_LABELS, TYPE_LABELS, typeLabelList, typesLabel } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer'
 import { ShareButton } from '@/components/properties/ShareButton'
@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const images = parseImages(property.images)
   const location = formatLocation(property.location)
   const operation = (OPERATION_LABELS[property.operation || 'venta'] || 'Venta').toLowerCase()
-  const typeOp = `${TYPE_LABELS[property.type] || property.type} en ${operation}`
+  const mainType = primaryType(property.type)
+  const typeOp = `${TYPE_LABELS[mainType] || mainType} en ${operation}`
   const price = hasPrice(property.price) ? formatPrice(property.price, property.operation) : null
   const m2 = property.sqMeters ? `${property.sqMeters} m²` : null
   const buildTitle = (...parts: (string | null)[]) => parts.filter(Boolean).join(' · ')
@@ -70,9 +71,11 @@ function PropertyHeader({ property }: { property: Property }) {
         >
           {STATUS_LABELS[property.status] || property.status}
         </span>
-        <span className="text-xs bg-stone-100 text-stone-600 px-2.5 py-1">
-          {TYPE_LABELS[property.type] || property.type}
-        </span>
+        {typeLabelList(property.type).map((label) => (
+          <span key={label} className="text-xs bg-stone-100 text-stone-600 px-2.5 py-1">
+            {label}
+          </span>
+        ))}
         <span className="text-xs bg-stone-100 text-stone-600 px-2.5 py-1">
           {OPERATION_LABELS[property.operation || 'venta'] || property.operation || 'Venta'}
         </span>
@@ -202,7 +205,7 @@ export default async function PropertyDetailPage({
   const whatsappUrl = `${whatsappHref}?text=${encodeURIComponent(whatsappText)}`
   const specsProps = { property, floorLabel, hasElevator, showFloorCard }
   const featureItems = [
-    { label: 'Tipo de inmueble', value: TYPE_LABELS[property.type] || property.type },
+    { label: 'Tipo de inmueble', value: typesLabel(property.type, ', ') },
     { label: 'Disponibilidad', value: property.availability },
     { label: 'Agua caliente', value: property.hotWater },
     { label: 'Calefacción', value: property.heating },

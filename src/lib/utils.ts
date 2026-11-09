@@ -27,7 +27,7 @@ export function parseImages(images: string): string[] {
   }
 }
 
-export const PROPERTY_TYPES = ['piso', 'atico', 'casa', 'chalet', 'local', 'terreno', 'garaje', 'oficina'] as const
+export const PROPERTY_TYPES = ['piso', 'atico', 'casa', 'chalet', 'local', 'terreno', 'garaje', 'oficina', 'otros'] as const
 export const PROPERTY_OPERATIONS = ['venta', 'alquiler'] as const
 export const PROPERTY_STATUSES = ['disponible', 'reservado', 'vendido'] as const
 
@@ -46,6 +46,32 @@ export const TYPE_LABELS: Record<string, string> = {
   terreno: 'Terreno',
   garaje: 'Garaje',
   oficina: 'Oficina',
+  otros: 'Otros',
+}
+
+/** Una propiedad puede tener varias categorias guardadas en `type` separadas por coma
+ * (ej. "casa,terreno"). La primera es la principal. */
+export function parseTypes(type: string | null | undefined): string[] {
+  return (type ?? '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+}
+
+export function serializeTypes(types: string[]): string {
+  return Array.from(new Set(types)).join(',')
+}
+
+export function primaryType(type: string | null | undefined): string {
+  return parseTypes(type)[0] ?? ''
+}
+
+export function typeLabelList(type: string | null | undefined): string[] {
+  return parseTypes(type).map((t) => TYPE_LABELS[t] || t)
+}
+
+export function typesLabel(type: string | null | undefined, separator = ' · '): string {
+  return typeLabelList(type).join(separator)
 }
 
 export const OPERATION_LABELS: Record<string, string> = {

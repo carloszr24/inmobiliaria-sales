@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Property } from '@/types'
-import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
+import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, typesLabel } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 interface PropertyCardProps {
@@ -92,7 +92,7 @@ export function PropertyCard({ property, variant = 'default' }: PropertyCardProp
                   )}
                   {property.bathrooms && <span>{property.bathrooms} baños</span>}
                   <span className="ml-auto text-[11px] bg-stone-100 px-2.5 py-1 text-stone-600 tracking-[0.12em] uppercase">
-                    {TYPE_LABELS[property.type] || property.type}
+                    {typesLabel(property.type)}
                   </span>
                   <span className="text-[11px] bg-stone-100 px-2.5 py-1 text-stone-600 tracking-[0.12em] uppercase">
                     {OPERATION_LABELS[property.operation || 'venta'] || property.operation || 'Venta'}

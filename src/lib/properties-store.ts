@@ -1,5 +1,6 @@
 import { listProperties } from '@/lib/properties-repository'
 import { isFeaturedFlag, MAX_FEATURED_ON_HOME } from '@/lib/property-db'
+import { parseTypes } from '@/lib/utils'
 import type { Property } from '@/types'
 import type { PropertyFilters } from '@/types'
 
@@ -36,7 +37,7 @@ export function filterProperties(
 ): Property[] {
   let list = [...properties]
 
-  if (searchParams.type) list = list.filter((p) => p.type === searchParams.type)
+  if (searchParams.type) list = list.filter((p) => parseTypes(p.type).includes(searchParams.type as string))
   if (searchParams.operation) list = list.filter((p) => p.operation === searchParams.operation)
   if (searchParams.status) list = list.filter((p) => p.status === searchParams.status)
   if (searchParams.minPrice) {
@@ -84,7 +85,7 @@ export async function getFeaturedPropertiesForHome(): Promise<Property[]> {
 
 export function applyPropertyFilters(properties: Property[], filters: PropertyFilters): Property[] {
   let list = [...properties]
-  if (filters.type) list = list.filter((p) => p.type === filters.type)
+  if (filters.type) list = list.filter((p) => parseTypes(p.type).includes(filters.type as string))
   if (filters.operation) list = list.filter((p) => p.operation === filters.operation)
   if (filters.status) list = list.filter((p) => p.status === filters.status)
   if (filters.minPrice != null) list = list.filter((p) => p.price >= filters.minPrice!)

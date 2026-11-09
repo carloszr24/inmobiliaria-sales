@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Lead, Property } from '@/types'
 import { MAX_FEATURED_ON_HOME } from '@/lib/property-db'
 import { LEAD_INTENT_LABELS, LEAD_SOURCE_LABELS, LEAD_STATUS_LABELS } from '@/lib/leads'
-import { formatPrice, hasPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_STATUSES, PROPERTY_TYPES, STATUS_LABELS, TYPE_LABELS } from '@/lib/utils'
+import { formatPrice, hasPrice, OPERATION_LABELS, PROPERTY_OPERATIONS, PROPERTY_STATUSES, PROPERTY_TYPES, serializeTypes, parseTypes, STATUS_LABELS, TYPE_LABELS, typesLabel } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 type ImageItem =
@@ -218,6 +218,13 @@ export default function AdminPage() {
     } else {
       setForm({ ...form, [name]: value })
     }
+  }
+
+  const toggleType = (type: string) => {
+    const current = parseTypes(form.type)
+    const next = current.includes(type) ? current.filter((t) => t !== type) : [...current, type]
+    if (next.length === 0) return
+    setForm({ ...form, type: serializeTypes(next) })
   }
 
   const handleExtraToggle = (field: 'garage' | 'elevator' | 'furnished' | 'heating') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -577,14 +584,35 @@ export default function AdminPage() {
                   className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900" />
               </div>
 
-              <div>
-                <label className="text-xs text-stone-500 block mb-1.5">Tipo</label>
-                <select name="type" value={form.type} onChange={handleChange}
-                  className="w-full border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:border-stone-900 bg-white">
-                  {PROPERTY_TYPES.map(t => (
-                    <option key={t} value={t}>{TYPE_LABELS[t]}</option>
-                  ))}
-                </select>
+              <div className="md:col-span-2">
+                <label className="text-xs text-stone-500 block mb-1.5">Tipo (puedes marcar varios)</label>
+                <div className="flex flex-wrap gap-2">
+                  {PROPERTY_TYPES.map((t) => {
+                    const selected = parseTypes(form.type)
+                    const active = selected.includes(t)
+                    const isMain = active && selected[0] === t
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => toggleType(t)}
+                        aria-pressed={active}
+                        className={cn(
+                          'px-3 py-2 text-sm border transition-colors',
+                          active
+                            ? 'border-stone-900 bg-stone-900 text-white'
+                            : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400'
+                        )}
+                      >
+                        {TYPE_LABELS[t]}
+                        {isMain && selected.length > 1 && <span className="ml-1.5 text-[10px] opacity-70">principal</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-xs text-stone-400 mt-1.5">
+                  La primera que marques es la principal: es la que aparece en el título que ve Google. Debe quedar al menos una.
+                </p>
               </div>
 
               <div>
@@ -891,7 +919,7 @@ export default function AdminPage() {
                       {OPERATION_LABELS[p.operation || 'venta'] || p.operation || 'Venta'}
                     </td>
                     <td className="px-4 py-3 text-stone-500">
-                      {TYPE_LABELS[p.type] || p.type}
+                      {typesLabel(p.type)}
                     </td>
                     <td className="px-4 py-3">
                       <span className={cn('text-xs px-2 py-0.5 font-medium', statusColors[p.status] || '')}>
