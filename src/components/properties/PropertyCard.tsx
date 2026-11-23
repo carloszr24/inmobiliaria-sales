@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Property } from '@/types'
+import { propertyPath } from '@/lib/listing-seo'
 import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, typesLabel } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
@@ -23,13 +24,13 @@ export function PropertyCard({ property, variant = 'default' }: PropertyCardProp
   const priceLabel = formatPrice(property.price, property.operation)
 
   return (
-    <Link href={`/propiedades/${property.id}`} className="group block">
+    <Link href={propertyPath(property)} className="group block">
       <article className="card-hover overflow-hidden bg-white border border-stone-100">
         {/* Image */}
         <div className={cn('relative overflow-hidden bg-stone-100', isFeaturedMinimal ? 'aspect-[3/4]' : 'aspect-[16/10]')}>
           <Image
             src={firstImage}
-            alt={property.title}
+            alt={property.displayTitle || property.title}
             fill
             unoptimized
             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -73,7 +74,7 @@ export function PropertyCard({ property, variant = 'default' }: PropertyCardProp
               'font-medium text-stone-900 leading-snug line-clamp-2 group-hover:text-gold transition-colors',
               isFeaturedMinimal ? 'text-base' : 'text-lg'
             )}>
-              {property.title}
+              {property.displayTitle || property.title}
             </h3>
           </div>
 

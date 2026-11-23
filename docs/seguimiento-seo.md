@@ -278,6 +278,36 @@ en el admin; (6) reescritura de las fichas mas flojas con aprobacion de David.
 
 **Resultado / metricas**: linea base para comparar en el informe trimestral.
 
+### 2026-11-23 (2) — Implementacion: H1 y meta generados, slugs nuevos con 301 y reescritura de fichas
+
+**Que se hizo**:
+- **Slugs**: las fichas pasan de `casa-en-venta-r37w` a `casa-en-venta-fernan-nunez-r37w`
+  (tipo + operacion + ubicacion + codigo). Las URLs antiguas redirigen con 308 permanente a la nueva
+  y el sitemap, los canonicals y el boton de compartir usan la nueva (`src/lib/listing-seo.ts`).
+- **H1 y tarjetas**: se respeta el titulo de David si es bueno; si esta en mayusculas se pasa a
+  minusculas; si es generico o repetido se genera desde los datos (tipo, zona, m2, habitaciones),
+  garantizando que no haya dos H1 iguales.
+- **Meta description**: ahora se genera desde los datos de la ficha (tipo, zona, m2, habitaciones,
+  extras, precio) mas una frase limpia de la descripcion o una llamada a la accion. Ya no hereda
+  "¡¡¡" ni erratas. Se ignoran precios y superficies absurdos (0/1/8 EUR, casa de 15 m2).
+- **Reescritura de 28 de las 44 fichas** (titulo y descripcion) usando solo datos que ya estaban en
+  la ficha o en su descripcion; detalle ficha a ficha en `docs/reescritura-fichas-2026-11-23.md`
+  y copia de seguridad previa en `docs/backups/fichas-antes-2026-11-23.json`. No se tocaron precios.
+
+**Antes -> despues (datos de la base de datos y del generador, pendiente de recrawl en produccion)**:
+- Titulos en mayusculas 29/44 -> 9/44 (los 9 restantes se muestran en minusculas por el generador);
+  titulos repetidos 11/44 -> 0; H1 unicos 44/44; H1 con ubicacion 4/44 -> 44/44.
+- Descripciones en mayusculas 21/44 -> 3/44; descripciones de menos de 40 palabras 11 -> 8;
+  mediana de palabras 54-55 -> 55 (no se puede alargar sin inventar datos).
+- Meta descriptions unicas 44/44, sin "!" ni erratas tipicas (antes 8+ con ellas).
+- Slugs unicos 44/44 con ubicacion (antes 4/44), sin erratas (antes 3).
+
+**Pendiente**: confirmar con David datos dudosos que no se tocaron (precios de 0/1/8 EUR en
+discoteca-lm9v, gran-chalet-t5id y parcela-r90m; superficies y plantas contradictorias).
+
+**Resultado / metricas**: se verificara con un nuevo rastreo de Screaming Frog y en Search Console
+(paginas indexadas y redirecciones) tras el despliegue.
+
 ---
 
 ## Formato para futuras entradas

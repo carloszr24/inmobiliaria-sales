@@ -1,6 +1,7 @@
 import { listProperties } from '@/lib/properties-repository'
 import { isFeaturedFlag, MAX_FEATURED_ON_HOME } from '@/lib/property-db'
 import { parseTypes } from '@/lib/utils'
+import { decorateProperties, findPropertyByParam } from '@/lib/listing-seo'
 import type { Property } from '@/types'
 import type { PropertyFilters } from '@/types'
 
@@ -15,13 +16,22 @@ function sortByDate(properties: Property[]): Property[] {
   return [...properties].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 }
 
+async function listDecorated(): Promise<Property[]> {
+  return decorateProperties(await listProperties())
+}
+
 export async function getAllProperties(): Promise<Property[]> {
-  return sortByDate(await listProperties())
+  return sortByDate(await listDecorated())
 }
 
 export async function getPropertyById(id: string): Promise<Property | undefined> {
-  const properties = await listProperties()
+  const properties = await listDecorated()
   return properties.find((p) => p.id === id)
+}
+
+/** Acepta el id antiguo, el slug actual o un slug desactualizado (se resuelve por el codigo final). */
+export async function getPropertyByParam(param: string): Promise<Property | undefined> {
+  return findPropertyByParam(await listDecorated(), param)
 }
 
 export function filterProperties(
@@ -70,7 +80,7 @@ export function filterProperties(
 }
 
 export async function getFeaturedPropertiesForHome(): Promise<Property[]> {
-  const catalog = await listProperties()
+  const catalog = await listDecorated()
   const featured = catalog.filter((p) => isFeaturedFlag(p.featured))
   if (featured.length >= MAX_FEATURED_ON_HOME) {
     return featured.slice(0, MAX_FEATURED_ON_HOME)

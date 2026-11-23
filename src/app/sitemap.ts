@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getAllProperties } from '@/lib/properties-store'
+import { propertyPath } from '@/lib/listing-seo'
 import { SITE_URL } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const properties = await getAllProperties()
     propertyRoutes = properties.map((property) => ({
-      url: `${SITE_URL}/propiedades/${property.id}`,
+      url: `${SITE_URL}${propertyPath(property)}`,
       lastModified: property.updatedAt,
       changeFrequency: 'weekly',
       priority: 0.7,

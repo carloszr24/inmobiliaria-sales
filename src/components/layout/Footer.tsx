@@ -30,7 +30,7 @@ export function Footer() {
             </p>
           </div>
           <div>
-            <p className="text-stone-900 text-xs tracking-widest uppercase mb-4">Navegación</p>
+            <p className="font-display font-medium leading-snug text-stone-900 text-xs tracking-widest uppercase mb-4">Navegación</p>
             <ul className="space-y-2 text-sm">
               <li><Link href="/propiedades" className="transition-colors hover:text-brand-cyan-dark">Propiedades</Link></li>
               <li><Link href="/sobre-nosotros" className="transition-colors hover:text-brand-cyan-dark">Servicios</Link></li>
@@ -38,7 +38,7 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <p className="text-stone-900 text-xs tracking-widest uppercase mb-4">Contacto</p>
+            <p className="font-display font-medium leading-snug text-stone-900 text-xs tracking-widest uppercase mb-4">Contacto</p>
             <ul className="space-y-2 text-sm">
               <li>
                 <a

@@ -6,7 +6,14 @@ const KNOWN_LOCATIONS: Record<string, string> = {
   'san sebastian de los ballesteros': 'San Sebastián de los Ballesteros',
   montilla: 'Montilla',
   cordoba: 'Córdoba',
+  'la rambla': 'La Rambla',
+  'la victoria': 'La Victoria',
+  'la vivtoria': 'La Victoria',
+  montemayor: 'Montemayor',
+  'avda de cadiz': 'Avda. de Cádiz',
+  'avenida de cadiz': 'Avenida de Cádiz',
 }
+const SMALL_WORDS = new Set(['de', 'del', 'la', 'las', 'los', 'el', 'y'])
 
 function stripAccents(value: string): string {
   return value.normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -16,7 +23,11 @@ export function formatLocation(location: string): string {
   const clean = location.trim().replace(/\s+/g, ' ')
   const known = KNOWN_LOCATIONS[stripAccents(clean).toLowerCase()]
   if (known) return known
-  return clean.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase())
+  return clean
+    .toLowerCase()
+    .split(' ')
+    .map((w, i) => (i > 0 && SMALL_WORDS.has(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ')
 }
 
 export function toSentenceCase(text: string): string {

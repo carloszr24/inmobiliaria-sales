@@ -1,42 +1,30 @@
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { CONTACT, phoneHref, whatsappHref } from '@/lib/contact'
-import { getPropertyById } from '@/lib/properties-store'
-import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, primaryType, STATUS_LABELS, TYPE_LABELS, typeLabelList, typesLabel } from '@/lib/utils'
+import { getPropertyByParam } from '@/lib/properties-store'
+import { buildMetaDescription, buildSeoTitle, propertyPath, propertySlug } from '@/lib/listing-seo'
+import { formatPrice, hasPrice, OPERATION_LABELS, parseImages, STATUS_LABELS, typeLabelList, typesLabel } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { PropertyImageViewer } from '@/components/properties/PropertyImageViewer'
 import { ShareButton } from '@/components/properties/ShareButton'
-import { formatLocation, SITE_URL, toSentenceCase, truncateAtWord } from '@/lib/seo'
+import { SITE_URL } from '@/lib/seo'
 import type { Property } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const property = await getPropertyById(params.id)
+  const property = await getPropertyByParam(params.id)
   if (!property) return { title: 'Propiedad no encontrada' }
 
   const images = parseImages(property.images)
-  const location = formatLocation(property.location)
-  const operation = (OPERATION_LABELS[property.operation || 'venta'] || 'Venta').toLowerCase()
-  const mainType = primaryType(property.type)
-  const typeOp = `${TYPE_LABELS[mainType] || mainType} en ${operation}`
-  const price = hasPrice(property.price) ? formatPrice(property.price, property.operation) : null
-  const m2 = property.sqMeters ? `${property.sqMeters} m²` : null
-  const buildTitle = (...parts: (string | null)[]) => parts.filter(Boolean).join(' · ')
-  let titleText = buildTitle(typeOp, location, m2, price)
-  if (titleText.length > 60) titleText = buildTitle(typeOp, location, price)
-  const title = { absolute: titleText }
-  const fallback = `${toSentenceCase(property.title.trim())} en ${location}. ${hasPrice(property.price) ? formatPrice(property.price, property.operation) : 'Consulta el precio'}.`
-  let description = property.description?.trim()
-    ? truncateAtWord(toSentenceCase(property.description), 150)
-    : fallback
-  if (description.length < 90) description = `${description} Más información y visitas en Sales Inmobiliaria, Fernán Núñez.`
+  const title = { absolute: buildSeoTitle(property) }
+  const description = buildMetaDescription(property)
 
   return {
     title,
     description,
-    alternates: { canonical: `/propiedades/${property.id}` },
+    alternates: { canonical: propertyPath(property) },
     openGraph: {
       title: title.absolute,
       description,
@@ -82,7 +70,7 @@ function PropertyHeader({ property }: { property: Property }) {
       </div>
 
       <h1 className="font-display text-3xl font-light text-stone-900 leading-tight mb-6">
-        {property.title}
+        {property.displayTitle || property.title}
       </h1>
 
       <p className="text-stone-500 text-sm">
@@ -162,7 +150,7 @@ function PropertyCTAs({ property, whatsappUrl }: { property: Property; whatsappU
       >
         Solicitar información
       </a>
-      <ShareButton title={property.title} url={`${SITE_URL}/propiedades/${property.id}`} />
+      <ShareButton title={property.displayTitle || property.title} url={`${SITE_URL}${propertyPath(property)}`} />
       {property.fotocasaUrl && (
         <a
           href={property.fotocasaUrl}
@@ -189,8 +177,9 @@ export default async function PropertyDetailPage({
 }: {
   params: { id: string }
 }) {
-  const property = await getPropertyById(params.id)
+  const property = await getPropertyByParam(params.id)
   if (!property) notFound()
+  if (params.id !== propertySlug(property)) permanentRedirect(propertyPath(property))
 
   const images = parseImages(property.images)
   const floorLabel = property.floor?.trim()
@@ -201,7 +190,7 @@ export default async function PropertyDetailPage({
     elevatorLabel === 'con ascensor' ||
     elevatorLabel === 'true'
   const showFloorCard = Boolean(floorLabel || hasElevator)
-  const whatsappText = `Hola! Me gustaría solicitar información sobre ${property.title}`
+  const whatsappText = `Hola! Me gustaría solicitar información sobre ${property.displayTitle || property.title}`
   const whatsappUrl = `${whatsappHref}?text=${encodeURIComponent(whatsappText)}`
   const specsProps = { property, floorLabel, hasElevator, showFloorCard }
   const featureItems = [
@@ -238,14 +227,14 @@ export default async function PropertyDetailPage({
           <span>/</span>
           <Link href="/propiedades" className="hover:text-stone-600 transition-colors">Propiedades</Link>
           <span>/</span>
-          <span className="text-stone-600 truncate max-w-[200px]">{property.title}</span>
+          <span className="text-stone-600 truncate max-w-[200px]">{property.displayTitle || property.title}</span>
         </nav>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-x-12 gap-y-6 lg:gap-y-0">
           <div className="lg:col-span-3 lg:row-start-1">
-            <PropertyImageViewer images={images} title={property.title} />
+            <PropertyImageViewer images={images} title={property.displayTitle || property.title} />
           </div>
 
           <div className="lg:col-span-2 lg:col-start-4 lg:row-start-1 lg:row-span-2">
