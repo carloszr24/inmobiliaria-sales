@@ -27,6 +27,9 @@ export function createSupabaseAdmin() {
   }
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    // Next.js cachea los fetch del servidor (Data Cache) y en Vercel esa cache sobrevive a los despliegues:
+    // sin esto la web seguia sirviendo fichas antiguas aunque la base de datos ya estuviera actualizada.
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }) },
   })
 }
 

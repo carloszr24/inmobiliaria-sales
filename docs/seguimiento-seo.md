@@ -308,6 +308,27 @@ discoteca-lm9v, gran-chalet-t5id y parcela-r90m; superficies y plantas contradic
 **Resultado / metricas**: se verificara con un nuevo rastreo de Screaming Frog y en Search Console
 (paginas indexadas y redirecciones) tras el despliegue.
 
+### 2026-11-23 (3) — Correccion: la web mostraba fichas antiguas + correccion de erratas en titulos
+
+**Que se hizo**:
+- **Incidencia detectada tras el despliegue**: las redirecciones, los slugs y el sitemap funcionaban,
+  pero la web seguia mostrando los datos ANTIGUOS de las fichas (p. ej. `t5id` como "Piso 500 m2" y
+  `7zsh` como "Oportnidad piso economico") aunque la base de datos ya tenia los nuevos. Causa: la cache de
+  datos de Next.js cacheaba las peticiones de Supabase y en Vercel esa cache sobrevive a los despliegues.
+  Solucion: el cliente de Supabase del servidor ahora hace todas sus peticiones con `cache: 'no-store'`
+  (`src/lib/supabase-server.ts`). Con esto cualquier cambio en el panel o en la BD se ve al instante.
+- **Erratas en titulos**: el generador ya no deja pasar tildes ni erratas habituales. Nuevo corrector
+  (`fixSpanishText` en `src/lib/seo.ts`): tildes (Caserio->Caserío, rustica->rústica, dúplex, ático…),
+  erratas tipicas (oportnidad, veta, caa…), nombres de lugar siempre bien escritos (Fernán Núñez,
+  San Sebastián de los Ballesteros, Córdoba…), mayuscula inicial y el "en" que faltaba
+  ("Casa en venta Fernán Núñez" -> "Casa en venta en Fernán Núñez"). Se aplica a todos los titulos,
+  tambien a los que escriba David en el futuro, y a las frases de descripcion que entran en la meta
+  (ej. "a demas" -> "además", palabras sueltas en MAYUSCULAS pasadas a minusculas).
+- Revisadas las 44 fichas (H1, titulo SEO y meta): todas las palabras resultantes verificadas a mano.
+
+**Por que**: Carlos no admite erratas en los titulos de las viviendas, y la reescritura de fichas debia
+verse en la web, no solo en la base de datos.
+
 ---
 
 ## Formato para futuras entradas

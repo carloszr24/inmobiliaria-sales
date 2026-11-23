@@ -30,20 +30,100 @@ export function formatLocation(location: string): string {
     .join(' ')
 }
 
+/** Palabras habituales en anuncios que se escriben sin tilde o con errata. Clave sin tilde y en minusculas. */
+const WORD_FIXES: Record<string, string> = {
+  rustica: 'rústica',
+  rusticas: 'rústicas',
+  rustico: 'rústico',
+  rusticos: 'rústicos',
+  caserio: 'caserío',
+  atico: 'ático',
+  duplex: 'dúplex',
+  triplex: 'tríplex',
+  jardin: 'jardín',
+  sotano: 'sótano',
+  salon: 'salón',
+  ubicacion: 'ubicación',
+  habitacion: 'habitación',
+  economico: 'económico',
+  economica: 'económica',
+  unico: 'único',
+  unica: 'única',
+  magnifico: 'magnífico',
+  magnifica: 'magnífica',
+  ocasion: 'ocasión',
+  inversion: 'inversión',
+  construccion: 'construcción',
+  urbanizacion: 'urbanización',
+  calefaccion: 'calefacción',
+  tranquilo: 'tranquilo',
+  comodo: 'cómodo',
+  comoda: 'cómoda',
+  practico: 'práctico',
+  practica: 'práctica',
+  ultimo: 'último',
+  ultima: 'última',
+  fabrica: 'fábrica',
+  oportnidad: 'oportunidad',
+  oprtunidad: 'oportunidad',
+  oportunidd: 'oportunidad',
+  oportunidda: 'oportunidad',
+  veta: 'venta',
+  vnta: 'venta',
+  vemta: 'venta',
+  caa: 'casa',
+  csa: 'casa',
+  pisp: 'piso',
+  alquilier: 'alquiler',
+  alqiler: 'alquiler',
+  chale: 'chalet',
+  parcla: 'parcela',
+  picina: 'piscina',
+  pscina: 'piscina',
+  garage: 'garaje',
+  reformr: 'reformar',
+}
+
+const PLACE_FIXES: [RegExp, string][] = [
+  [/fern[aá]n\s+n[uú][ñn]ez/gi, 'Fernán Núñez'],
+  [/san\s+sebasti[aá]n\s+de\s+los\s+ballesteros/gi, 'San Sebastián de los Ballesteros'],
+  [/c[oó]rdoba/gi, 'Córdoba'],
+  [/montilla/gi, 'Montilla'],
+  [/montemayor/gi, 'Montemayor'],
+  [/la\s+rambla/gi, 'La Rambla'],
+  [/la\s+vi[cv]toria/gi, 'La Victoria'],
+  [/\bm2\b/gi, 'm²'],
+  [/\ba\s+dem[aá]s\b/gi, 'además'],
+  [/\bdemas\b(?=\s*[,.])/gi, 'demás'],
+  [/\bademas\b/gi, 'además'],
+  [/\btambien\b/gi, 'también'],
+]
+
+/** Corrige tildes y erratas frecuentes y escribe bien los nombres de lugar. Respeta la mayuscula inicial. */
+export function fixSpanishText(text: string): string {
+  let out = text
+  for (const [pattern, replacement] of PLACE_FIXES) out = out.replace(pattern, replacement)
+  out = out.replace(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+/g, (word, offset: number) => {
+    const fixed = WORD_FIXES[stripAccents(word).toLowerCase()]
+    if (!fixed || fixed === word.toLowerCase()) return word
+    const isUpper = word.length > 1 && word === word.toUpperCase()
+    if (isUpper) return fixed.toUpperCase()
+    // Primera palabra del texto o tras punto: mayuscula inicial. En medio de frase siempre en minuscula.
+    const startsSentence = offset === 0 || /[.!?]\s*$/.test(out.slice(0, offset))
+    return startsSentence ? fixed.charAt(0).toUpperCase() + fixed.slice(1) : fixed
+  })
+  return out
+}
+
 export function toSentenceCase(text: string): string {
   const letters = text.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, '')
   if (!letters) return text
   const upper = letters.replace(/[^A-ZÁÉÍÓÚÜÑ]/g, '').length
   if (upper / letters.length < 0.6) return text
-  return text
+  const sentence = text
     .toLowerCase()
     .replace(/(^\s*|[.!?]\s+)([a-záéíóúüñ])/g, (_, sep: string, ch: string) => sep + ch.toUpperCase())
-    .replace(/fern[aá]n n[uú][ñn]ez/gi, 'Fernán Núñez')
-    .replace(/san sebasti[aá]n de los ballesteros/gi, 'San Sebastián de los Ballesteros')
-    .replace(/c[oó]rdoba/gi, 'Córdoba')
-    .replace(/montilla/gi, 'Montilla')
-    .replace(/\bm2\b/gi, 'm²')
-    .replace(/\bsales\b/gi, 'SALES')
+  return fixSpanishText(sentence).replace(/\bsales\b/gi, 'SALES')
 }
 
 export function truncateAtWord(text: string, max: number): string {

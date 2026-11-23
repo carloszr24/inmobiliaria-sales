@@ -1,5 +1,5 @@
 import type { Property } from '../types'
-import { formatLocation, toSentenceCase, truncateAtWord } from './seo'
+import { fixSpanishText, formatLocation, toSentenceCase, truncateAtWord } from './seo'
 import { formatPrice, hasPrice, primaryType, TYPE_LABELS } from './utils'
 
 const HEADLINE_TYPES: Record<string, string> = { ...TYPE_LABELS, chalet: 'Chalet', otros: 'Inmueble' }
@@ -124,6 +124,18 @@ function generatedHeadline(p: Property, used: Set<string>): string {
   return `${base} · ${ref}`
 }
 
+/** Deja el titulo sin erratas habituales: tildes, lugares bien escritos, mayuscula inicial y "en" ante la zona. */
+function tidyTitle(title: string, location: string): string {
+  let out = fixSpanishText(title.replace(/\s+/g, ' ').trim())
+  if (!out) return out
+  const place = formatLocation(location || '')
+  if (place) {
+    const escaped = place.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    out = out.replace(new RegExp(`\\b(venta|alquiler)\\s+(${escaped})`, 'i'), (_, op: string, loc: string) => `${op} en ${loc}`)
+  }
+  return out.charAt(0).toUpperCase() + out.slice(1)
+}
+
 /** Titulo que se muestra (H1, tarjetas). Se respeta el de David si es bueno; si esta en mayusculas se
  * pasa a minusculas; si es generico o repetido se genera a partir de los datos de la ficha. */
 export function decorateProperties<T extends Property>(list: T[]): (T & { displayTitle: string })[] {
@@ -138,7 +150,7 @@ export function decorateProperties<T extends Property>(list: T[]): (T & { displa
   for (const p of ordered) {
     const raw = p.title.replace(/\s+/g, ' ').trim()
     const duplicated = (counts.get(norm(p.title)) ?? 0) > 1
-    let title = isShouting(raw) ? toSentenceCase(raw) : raw
+    let title = tidyTitle(isShouting(raw) ? toSentenceCase(raw) : raw, p.location)
     const located = hasLocation(title, p.location)
     if (duplicated || isGenericTitle(title) || title.length < 12) {
       pending.push(p)
@@ -178,7 +190,8 @@ export function buildSeoTitle(p: Property): string {
 // ---------- Meta description ----------
 
 function cleanSnippet(description: string, avoid: string[] = []): string | null {
-  const text = toSentenceCase(description || '')
+  const text = fixSpanishText(toSentenceCase(description || ''))
+    .replace(/\b(?!SALES\b)[A-ZÁÉÍÓÚÑ]{4,}\b/g, (w) => w.toLowerCase())
     .replace(/[¡¿]/g, '')
     .replace(/[!?]+/g, '.')
     .replace(/\.{2,}/g, '.')
