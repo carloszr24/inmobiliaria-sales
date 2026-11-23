@@ -250,6 +250,34 @@ Valencia.
 el rendimiento de la ficha en Google Business Profile (busquedas, llamadas, clics a la web) cuando
 este disponible.
 
+### 2026-11-23 — Auditoria on-page de fichas: H1, descripciones, meta descriptions y slugs
+
+**Que se hizo**: rastreo de las 48 URLs del sitemap (4 paginas fijas + 44 fichas) cruzado con el
+catalogo de Supabase. Paginas fijas: titulos de 48-60 caracteres y meta descriptions de 120-140, bien;
+unico H1 por pagina; sin imagenes sin alt.
+
+**Hallazgos en las 44 fichas** (el H1 de cada ficha es el titulo que escribe David):
+- Titulos: 29/44 en MAYUSCULAS, 11/44 repetidos ("CASA EN VENTA" x6, "GRAN CASA EN VENTA" x2,
+  "PLAZA DE GARAJE EN VENTA" x2), 30/44 genericos, solo 4/44 incluyen la ubicacion; longitud media 21.
+- Descripciones: mediana 54 palabras (min 11, max 104), **0/44 llegan a 120**, 21/44 en mayusculas.
+- Meta description: la generamos a partir de la descripcion, asi que hereda sus defectos ("¡¡¡", errata
+  "una ana con potencial", 5 que empiezan por "Buscas una...").
+- Slugs: 44/44 acaban en codigo aleatorio (-r37w), solo 4/44 llevan ubicacion, bases repetidas
+  (casa-en-venta x6), 3 con erratas ("caa-en-venta...", "oportnidad-piso..."), 3 ya no coinciden con
+  el titulo actual.
+- Fotos: 8/44 con menos de 5 fotos, 5/44 con una sola.
+- Antes/despues de los consejos del panel (28/09): mayusculas en titulo 29/36 -> 0/8; mayusculas en
+  descripcion 21/36 -> 0/8; pero descripciones >=120 palabras 0/36 -> 0/8 y titulos genericos siguen.
+
+**Recomendaciones** (pendientes de decidir): (1) H1 y meta description generados a partir de datos
+estructurados cuando el texto de David sea generico o repetido; (2) slugs nuevos tipo
+`casa-en-venta-fernan-nunez-xxxx` con redireccion 301 desde los antiguos; (3) paginas indexables por
+categoria/zona (Cordoba, Montilla, La Rambla) alineadas con el volumen de Semrush; (4) JSON-LD por
+ficha y enlaces a fichas relacionadas; (5) sugerencia de titulo en un clic y puntuacion de calidad
+en el admin; (6) reescritura de las fichas mas flojas con aprobacion de David.
+
+**Resultado / metricas**: linea base para comparar en el informe trimestral.
+
 ---
 
 ## Formato para futuras entradas
