@@ -6,16 +6,12 @@ import { Footer } from '@/components/layout/Footer'
 import { StructuredData } from '@/components/seo/StructuredData'
 import { SITE_URL } from '@/lib/seo'
 
+// Una sola instancia de DM Sans (cuerpo y titulares comparten familia; solo cambia el peso).
 const sans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-body',
-  weight: ['400', '500', '700'],
-})
-
-const display = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: ['500', '600', '700'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
 })
 
 const logo = Montserrat({
@@ -62,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${sans.variable} ${display.variable} ${logo.variable}`}>
+    <html lang="es" className={`${sans.variable} ${logo.variable}`}>
       <body className="bg-white text-stone-900 antialiased">
         <StructuredData />
         <Navbar />
