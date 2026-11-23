@@ -32,6 +32,7 @@ export function formatLocation(location: string): string {
 
 /** Palabras habituales en anuncios que se escriben sin tilde o con errata. Clave sin tilde y en minusculas. */
 const WORD_FIXES: Record<string, string> = {
+  cadiz: 'cádiz',
   rustica: 'rústica',
   rusticas: 'rústicas',
   rustico: 'rústico',
@@ -102,17 +103,19 @@ const PLACE_FIXES: [RegExp, string][] = [
 /** Corrige tildes y erratas frecuentes y escribe bien los nombres de lugar. Respeta la mayuscula inicial. */
 export function fixSpanishText(text: string): string {
   let out = text
-  for (const [pattern, replacement] of PLACE_FIXES) out = out.replace(pattern, replacement)
-  out = out.replace(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+/g, (word, offset: number) => {
+  for (const [pattern, replacement] of PLACE_FIXES) {
+    out = out.replace(pattern, (match) =>
+      match.length > 2 && match === match.toUpperCase() ? replacement.toUpperCase() : replacement
+    )
+  }
+  // Se conserva el estilo de mayusculas de quien escribio: MAYUSCULAS, Capitalizada o minuscula.
+  return out.replace(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+/g, (word) => {
     const fixed = WORD_FIXES[stripAccents(word).toLowerCase()]
     if (!fixed || fixed === word.toLowerCase()) return word
-    const isUpper = word.length > 1 && word === word.toUpperCase()
-    if (isUpper) return fixed.toUpperCase()
-    // Primera palabra del texto o tras punto: mayuscula inicial. En medio de frase siempre en minuscula.
-    const startsSentence = offset === 0 || /[.!?]\s*$/.test(out.slice(0, offset))
-    return startsSentence ? fixed.charAt(0).toUpperCase() + fixed.slice(1) : fixed
+    if (word.length > 1 && word === word.toUpperCase()) return fixed.toUpperCase()
+    const first = word.charAt(0)
+    return first === first.toUpperCase() ? fixed.charAt(0).toUpperCase() + fixed.slice(1) : fixed
   })
-  return out
 }
 
 export function toSentenceCase(text: string): string {

@@ -29,11 +29,6 @@ export function slugify(text: string): string {
   return norm(text).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 }
 
-function isShouting(text: string): boolean {
-  const letters = text.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g, '')
-  return letters.length > 4 && letters === letters.toUpperCase()
-}
-
 /** Precios claramente inventados o de relleno (0, 1, 8 EUR...) no deben salir en titulos ni meta. */
 function plausiblePrice(p: Pick<Property, 'price' | 'operation'>): boolean {
   return p.operation === 'alquiler' ? p.price >= 50 : p.price >= 1000
@@ -44,19 +39,6 @@ function plausibleArea(p: Pick<Property, 'sqMeters' | 'type'>): boolean {
   if (!p.sqMeters) return false
   const min = primaryType(p.type) === 'garaje' ? 5 : primaryType(p.type) === 'terreno' ? 20 : 25
   return p.sqMeters >= min
-}
-
-const GENERIC_WORDS = new Set([
-  'en', 'de', 'del', 'la', 'las', 'el', 'los', 'un', 'una', 'con', 'y', 'se', 'venta', 'alquiler',
-  'casa', 'casas', 'piso', 'pisos', 'chalet', 'villa', 'parcela', 'rustica', 'garaje', 'plaza', 'local',
-  'terreno', 'solar', 'suelo', 'atico', 'duplex', 'vivienda', 'inmueble', 'oficina', 'nave', 'finca',
-  'gran', 'grande', 'bonito', 'bonita', 'precioso', 'preciosa', 'magnifico', 'magnifica', 'espectacular',
-  'oportunidad', 'economico', 'economica', 'inmejorable', 'nuevo', 'nueva', 'barato', 'barata',
-])
-
-function isGenericTitle(title: string): boolean {
-  const tokens = norm(title).replace(/[^a-z0-9 ]/g, ' ').split(' ').filter(Boolean)
-  return tokens.every((t) => GENERIC_WORDS.has(t))
 }
 
 function isYes(value?: string | null): boolean {
@@ -100,14 +82,6 @@ export function findPropertyByParam<T extends Pick<Property, 'id' | 'type' | 'op
 
 // ---------- H1 / titulo visible ----------
 
-function hasLocation(title: string, location: string): boolean {
-  const t = norm(title)
-  const tokens = norm(formatLocation(location))
-    .split(' ')
-    .filter((w) => w.length >= 5 && !['avenida', 'calle'].includes(w))
-  return tokens.some((w) => t.includes(w))
-}
-
 function generatedHeadline(p: Property, used: Set<string>): string {
   const type = HEADLINE_TYPES[primaryType(p.type)] ?? 'Inmueble'
   const operation = p.operation === 'alquiler' ? 'alquiler' : 'venta'
@@ -124,54 +98,23 @@ function generatedHeadline(p: Property, used: Set<string>): string {
   return `${base} · ${ref}`
 }
 
-/** Deja el titulo sin erratas habituales: tildes, lugares bien escritos, mayuscula inicial y "en" ante la zona. */
-function tidyTitle(title: string, location: string): string {
-  let out = fixSpanishText(title.replace(/\s+/g, ' ').trim())
-  if (!out) return out
-  const place = formatLocation(location || '')
-  if (place) {
-    const escaped = place.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    out = out.replace(new RegExp(`\\b(venta|alquiler)\\s+(${escaped})`, 'i'), (_, op: string, loc: string) => `${op} en ${loc}`)
-  }
+/** Titulo de David con lo minimo: tildes y erratas corregidas y mayuscula inicial. Nada mas: se respeta su
+ * redaccion y si lo escribio en mayusculas se queda en mayusculas. */
+export function tidyTitle(title: string): string {
+  const out = fixSpanishText(title.replace(/\s+/g, ' ').trim())
   return out.charAt(0).toUpperCase() + out.slice(1)
 }
 
-/** Titulo que se muestra (H1, tarjetas). Se respeta el de David si es bueno; si esta en mayusculas se
- * pasa a minusculas; si es generico o repetido se genera a partir de los datos de la ficha. */
+/** Titulo que se muestra (H1, tarjetas): el de David con correcciones minimas. Solo si la ficha no tiene
+ * titulo se genera uno a partir de los datos. */
 export function decorateProperties<T extends Property>(list: T[]): (T & { displayTitle: string })[] {
-  const counts = new Map<string, number>()
-  for (const p of list) counts.set(norm(p.title), (counts.get(norm(p.title)) ?? 0) + 1)
-
   const used = new Set<string>()
-  const result = new Map<string, string>()
-  const pending: T[] = []
-  const ordered = [...list].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-
-  for (const p of ordered) {
-    const raw = p.title.replace(/\s+/g, ' ').trim()
-    const duplicated = (counts.get(norm(p.title)) ?? 0) > 1
-    let title = tidyTitle(isShouting(raw) ? toSentenceCase(raw) : raw, p.location)
-    const located = hasLocation(title, p.location)
-    if (duplicated || isGenericTitle(title) || title.length < 12) {
-      pending.push(p)
-      continue
-    }
-    if (!located) {
-      const joiner = /(venta|alquiler) en /i.test(title) ? ' · ' : ' en '
-      const withLocation = `${title}${joiner}${formatLocation(p.location)}`
-      if (withLocation.length <= 70) title = withLocation
-    }
-    used.add(norm(title))
-    result.set(p.id, title)
-  }
-
-  for (const p of pending) {
-    const title = generatedHeadline(p, used)
-    used.add(norm(title))
-    result.set(p.id, title)
-  }
-
-  return list.map((p) => ({ ...p, displayTitle: result.get(p.id) ?? p.title }))
+  return list.map((p) => {
+    const tidy = tidyTitle(p.title || '')
+    const displayTitle = tidy.length >= 3 ? tidy : generatedHeadline(p, used)
+    used.add(norm(displayTitle))
+    return { ...p, displayTitle }
+  })
 }
 
 // ---------- <title> de la ficha ----------

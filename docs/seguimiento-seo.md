@@ -329,6 +329,19 @@ discoteca-lm9v, gran-chalet-t5id y parcela-r90m; superficies y plantas contradic
 **Por que**: Carlos no admite erratas en los titulos de las viviendas, y la reescritura de fichas debia
 verse en la web, no solo en la base de datos.
 
+### 2026-11-23 (4) — Titulos: vuelven los de David, solo con correcciones minimas
+
+**Que se hizo**: por indicacion de Carlos se deshace el cambio de redaccion de los titulos. Ahora el
+H1/tarjeta muestra el titulo que escribio David y solo se corrige lo imprescindible: mayuscula inicial,
+tildes y erratas (CASERIO->CASERÍO, RUSTICA->RÚSTICA, OPORTNIDAD ECONOMICO->OPORTUNIDAD ECONÓMICO,
+"en veta"->"en venta", FERNAN NUÑEZ->FERNÁN NÚÑEZ, CADIZ->CÁDIZ), respetando MAYUSCULAS si las uso. Ya no se
+anade zona, m2 ni habitaciones al H1. En la base de datos se restauraron 33 titulos (25 que habia reescrito
+y 8 con errata/tilde); copia de los titulos previos en `docs/backups/titulos-antes-de-restaurar-2026-11-23.json`.
+Se mantienen la meta description y el `<title>` de Google generados (llevan zona, m2 y precio) y las
+descripciones reescritas. Se revierte tambien el cambio de clases del pie de pagina.
+**Por que**: la redaccion de los titulos es de David; el SEO se refuerza en `<title>`, meta y URL.
+**Contrapartida**: titulos genericos/repetidos ("CASA EN VENTA" x varias) se quedan como estan en el H1.
+
 ---
 
 ## Formato para futuras entradas
