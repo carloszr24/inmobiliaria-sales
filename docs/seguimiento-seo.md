@@ -342,6 +342,17 @@ descripciones reescritas. Se revierte tambien el cambio de clases del pie de pag
 **Por que**: la redaccion de los titulos es de David; el SEO se refuerza en `<title>`, meta y URL.
 **Contrapartida**: titulos genericos/repetidos ("CASA EN VENTA" x varias) se quedan como estan en el H1.
 
+### 2026-11-23 (5) — Tipografia: la web se veia con fuente serif (Times) por un fallo de build
+
+**Que se hizo**: se detecto que en produccion la web renderizaba TODO con Times en lugar de DM Sans. Causa:
+el HTML generado por el servidor pedia las clases de fuente `__variable_cb1528…` pero el CSS desplegado definia
+`__variable_ef116d…` (build mezclado por la cache de Vercel), asi que `--font-body` quedaba sin definir y el
+navegador usaba la fuente por defecto. No era un cambio de codigo de estilos. Solucion: una unica instancia de
+DM Sans (pesos 400-700) en `layout.tsx` y `tailwind.config.ts`, lo que regenera las clases de forma coherente.
+Verificado: clases del HTML presentes en el CSS, DM Sans cargada (400/500/600/700) y captura visual correcta.
+**Por que**: la tipografia no es negociable en la identidad de la web; ademas Times mejora poco la legibilidad.
+**Para vigilar**: tras cada despliegue, comprobar que `getComputedStyle(body).fontFamily` empieza por `__DM_Sans`.
+
 ---
 
 ## Formato para futuras entradas
